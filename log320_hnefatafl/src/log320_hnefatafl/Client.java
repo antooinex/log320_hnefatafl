@@ -9,7 +9,7 @@ class Client {
 	Socket MyClient;
 	BufferedInputStream input;
 	BufferedOutputStream output;
-    	int[][] board = new int[13][13];
+    final Board board = new Board();
 	
 	try {
 		MyClient = new Socket("localhost", 8888);
@@ -30,19 +30,9 @@ class Client {
 				//System.out.println("size :" + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
-                System.out.println(s);
-                String[] boardValues;
-                boardValues = s.split(" ");
-                int x=0,y=0;
-                for(int i=0; i<boardValues.length;i++){
-                    board[x][y] = Integer.parseInt(boardValues[i]);
-                    x++;
-                    if(x == 13){
-                        x = 0;
-                        y++;
-                    }
-                }
-
+                //System.out.println(s);
+                board.fullUpdate(s);
+                board.draw();
                 System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
                 String move = null;
                 move = console.readLine();
@@ -58,18 +48,9 @@ class Client {
 				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
-                System.out.println(s);
-                String[] boardValues;
-                boardValues = s.split(" ");
-                int x=0,y=0;
-                for(int i=0; i<boardValues.length;i++){
-                    board[x][y] = Integer.parseInt(boardValues[i]);
-                    x++;
-                    if(x == 13){
-                        x = 0;
-                        y++;
-                    }
-                }
+                //System.out.println(s);
+                board.fullUpdate(s);
+                board.draw();
             }
 
 
@@ -84,6 +65,7 @@ class Client {
 				
 		String s = new String(aBuffer);
 		System.out.println("Dernier coup :"+ s);
+		board.update(s);
 		System.out.println("Entrez votre coup : ");
 		String move = null;
 		move = console.readLine();
