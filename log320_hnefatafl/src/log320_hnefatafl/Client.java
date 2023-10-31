@@ -57,23 +57,41 @@ class Client {
 			// Le serveur demande le prochain coup
 			// Le message contient aussi le dernier coup joue.
 	    if(cmd == '3'){
-		byte[] aBuffer = new byte[16];
-				
-		int size = input.available();
-		//System.out.println("size :" + size);
-		input.read(aBuffer,0,size);
-				
-		String s = new String(aBuffer);
-		System.out.println("Dernier coup :"+ s);
-		board.update(s);
-		System.out.println("Entrez votre coup : ");
-		String move = null;
-		move = console.readLine();
-		//System.out.println("move " + move);
-		output.write(move.getBytes(),0,move.length());
-		output.flush();
-				
-	     }
+			byte[] aBuffer = new byte[16];
+					
+			int size = input.available();
+			//System.out.println("size :" + size);
+			input.read(aBuffer,0,size);
+					
+			String s = new String(aBuffer);
+			System.out.println("Dernier coup :"+ s);
+			if(board.update(s)) {
+				System.out.println("Le dernier coup est valide.");
+				board.draw();
+			}
+			else {
+				System.out.println("Le dernier coup est invalide.");
+			}
+			boolean moveSent = false;
+			//Boucle tant que le coup choisi n'est pas valide (ne pas envoyer de coup invalide car ça ferait perdre la partie)
+			while (!moveSent) {
+				System.out.println("Entrez votre coup : ");
+				String move = null;
+				move = console.readLine();				
+				if(board.update(move)) {
+					System.out.println("Le coup choisi est valide.");
+					output.write(move.getBytes(),0,move.length());
+					output.flush();
+					board.draw();
+					moveSent = true;
+				}
+				else {
+					System.out.println("Le coup choisi est invalide.");
+				}
+				//System.out.println("move " + move);
+
+			}
+	    }
 			// Le dernier coup est invalide
 			if(cmd == '4'){
 				System.out.println("Coup invalide, entrez un nouveau coup : ");
