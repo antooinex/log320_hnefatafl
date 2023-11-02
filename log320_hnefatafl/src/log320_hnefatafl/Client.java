@@ -13,6 +13,7 @@ class Client {
 	BufferedInputStream input;
 	BufferedOutputStream output;
     final Board board = new Board();
+    final IA IA = new IA();
 	
 	try {
 		MyClient = new Socket("localhost", 8888);
@@ -39,10 +40,39 @@ class Client {
                 board.fullUpdate(s);
                 board.draw();
                 System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
-                String move = null;
-                move = console.readLine();
-				output.write(move.getBytes(),0,move.length());
-				output.flush();
+                boolean moveSent = false;
+    			boolean joueurIA = true;
+    			if(!joueurIA) {
+    				//Boucle tant que le coup choisi n'est pas valide (ne pas envoyer de coup invalide car ça ferait perdre la partie)
+    				while (!moveSent) {
+    					System.out.println("Entrez votre coup : ");
+    					String move = null;
+    					move = console.readLine();				
+    					if(board.update(move, equipe, true)) {
+    						System.out.println("Le coup choisi est valide.");
+    						output.write(move.getBytes(),0,move.length());
+    						output.flush();
+    						//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+    						
+    						board.draw();
+    						moveSent = true;
+    					}
+    					else {
+    						System.out.println("Le coup choisi est invalide.");
+    					}
+    					//System.out.println("move " + move);
+    				}
+    			}
+    			else {
+    				String move = IA.jouer(board, equipe);
+    				if(board.update(move, equipe, true)) {
+    					System.out.println("Le coup choisi est valide.");
+    					output.write(move.getBytes(),0,move.length());
+    					output.flush();
+    					//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+    					board.draw();
+    				}
+    			}
             }
             // Debut de la partie en joueur Noir
             if(cmd == '2'){
@@ -71,7 +101,7 @@ class Client {
 					
 			String s = new String(aBuffer);
 			System.out.println("Dernier coup :"+ s);
-			if(board.update(s, equipe.opposite())) {
+			if(board.update(s, equipe.opposite(), true)) {
 				System.out.println("Le dernier coup est valide.");
 				//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
 				board.draw();
@@ -80,27 +110,40 @@ class Client {
 				System.out.println("Le dernier coup est invalide.");
 			}
 			boolean moveSent = false;
-			//Boucle tant que le coup choisi n'est pas valide (ne pas envoyer de coup invalide car ça ferait perdre la partie)
-			while (!moveSent) {
-				System.out.println("Entrez votre coup : ");
-				String move = null;
-				move = console.readLine();				
-				if(board.update(move, equipe)) {
+			boolean joueurIA = true;
+			if(!joueurIA) {
+				//Boucle tant que le coup choisi n'est pas valide (ne pas envoyer de coup invalide car ça ferait perdre la partie)
+				while (!moveSent) {
+					System.out.println("Entrez votre coup : ");
+					String move = null;
+					move = console.readLine();				
+					if(board.update(move, equipe, true)) {
+						System.out.println("Le coup choisi est valide.");
+						output.write(move.getBytes(),0,move.length());
+						output.flush();
+						//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+						
+						board.draw();
+						moveSent = true;
+					}
+					else {
+						System.out.println("Le coup choisi est invalide.");
+					}
+					//System.out.println("move " + move);
+				}
+			}
+			else {
+				String move = IA.jouer(board, equipe);
+				if(board.update(move, equipe, true)) {
 					System.out.println("Le coup choisi est valide.");
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
 					//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
-					
 					board.draw();
-					moveSent = true;
 				}
-				else {
-					System.out.println("Le coup choisi est invalide.");
-				}
-				//System.out.println("move " + move);
-
 			}
 	    }
+			
 			// Le dernier coup est invalide
 			if(cmd == '4'){
 				System.out.println("Coup invalide, entrez un nouveau coup : ");

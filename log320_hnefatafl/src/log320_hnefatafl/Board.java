@@ -29,7 +29,7 @@ public class Board {
 		}		
 	}
 	
-	public boolean update(String coup, Equipe equipe) {
+	public boolean update(String coup, Equipe equipe, boolean update) {
 		
 		coup = coup.trim();
 		
@@ -111,26 +111,34 @@ public class Board {
 				
 					if(this.getBoard()[xTemp-1][yTemp-1] != 0) {
 						coupValide = false;
-						System.out.println("Il y a une pièce sur le chemin demandé.");
+						if(update) {
+							System.out.println("Il y a une pièce sur le chemin demandé.");
+						}
 					}
 				}
 			}
 			else {
 				coupValide = false;
-				System.out.println("Conditions non remplies pour les coordonnées.");
+				if(update) {
+					System.out.println("Conditions non remplies pour les coordonnées.");
+				}
 			}
 		}
 		else {
 			coupValide = false;
 			if(!coordonneesValides) {
-				System.out.println("Coordonnées invalides.");
+				if(update) {
+					System.out.println("Coordonnées invalides.");
+				}
 			}
 			if(!equipeValide) {
-				System.out.println("Équipe invalide.");
+				if(update) {
+					System.out.println("Équipe invalide.");
+				}
 			}
 		}
 		
-		if(coupValide) {
+		if(coupValide && update) {
 			int piece = getBoard()[xDep-1][yDep-1];
 			setValue(xArr-1, yArr-1, piece);
 			setValue(xDep-1, yDep-1, 0);
@@ -212,6 +220,39 @@ public class Board {
 			return 13;
 		default:
 			return -1;
+		}
+	}
+	
+	public String antiCoord(int abs) {
+		switch(abs) {
+		case 1:
+			return "A";
+		case 2:
+			return "B";
+		case 3:
+			return "C";
+		case 4:
+			return "D";
+		case 5:
+			return "E";
+		case 6:
+			return "F";
+		case 7:
+			return "G";
+		case 8:
+			return "H";
+		case 9:
+			return "I";
+		case 10:
+			return "J";
+		case 11:
+			return "K";
+		case 12:
+			return "L";
+		case 13:
+			return "M";
+		default:
+			return "Z";
 		}
 	}
 	
