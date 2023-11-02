@@ -1,0 +1,76 @@
+// Client: TODO: verifier si une piece doit etre retiree
+int x
+int y
+boolean roiTrouve=false;
+
+if (y<11 && board[x][y+1]==Equipe && board[x][y+2]==Equipe.opposite()){
+  if (board[x][y+1]=5 && equipe==Equipe.ROUGE) {roiEnDanger(x,y+1); break}
+  board[x][y+1]=Equipe.UNDEFINED;
+}
+if (y>1 && board[x][y-1]==Equipe && board[x][y-2]==Equipe.opposite()){
+  if (board[x][y-1]=5 && equipe==Equipe.ROUGE) {roiEnDanger(x,y-1); break}
+  board[x][y-1]=Equipe.UNDEFINED;
+}
+if (x<11 && board[x+1][y]==Equipe && board[x+2][y]==Equipe.opposite()){
+  if (board[x+1][y]=5 && equipe==Equipe.ROUGE) {roiEnDanger(x+1,y); break}
+  board[x+1][y]=Equipe.UNDEFINED;
+}
+if (x>1 && board[x-1][y]==Equipe && board[x-2][y]==Equipe.opposite()){
+  if (board[x-1][y]=5 && equipe==Equipe.ROUGE) {roiEnDanger(x-1,y); break}
+  board[x-1][y]=Equipe.UNDEFINED;
+}
+
+//verifier si le roi est entouré
+public static void roiEnDanger(int xRoi, int yRoi){
+  if(xRoi<12 && xRoi>0 && yRoi<12 && yRoi>0){ //le roi se trouve sur une case du 'milieu'
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi<12 && xRoi>0 && yRoi==0){ //le roi se trouve sur le bord du bas
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi<12 && xRoi>0 && yRoi==0){ //le roi se trouve sur le bord du haut
+    if (board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==12 && yRoi<12 && yRoi>0){ //le roi se trouve sur le bord de droite
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==0 && yRoi<12 && yRoi>0){ //le roi se trouve sur le bord de gauche
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==0 && yRoi==12){ //le roi se trouve dans le coin en haut a gauche
+    if (board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==12 && yRoi==12){ //le roi se trouve dans le coin en haut a droite
+    if (board[xRoi][yRoi-1]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==0 && yRoi==0){ //le roi se trouve dans le coin en bas a gauche
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi+1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+  else if(xRoi==12 && yRoi==0){ //le roi se trouve dans le coin en bas a droite
+    if (board[xRoi][yRoi+1]==Equipe.ROUGE && board[xRoi-1][yRoi]==Equipe.ROUGE){
+      //le roi est entouré, l'equipe noire a perdue
+    }
+  }
+}
+
+
+
+
+
+
