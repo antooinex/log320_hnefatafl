@@ -29,7 +29,7 @@ public class Board {
 		}		
 	}
 	
-	public boolean update(String coup) {
+	public boolean update(String coup, Equipe equipe) {
 		
 		coup = coup.trim();
 		
@@ -51,8 +51,39 @@ public class Board {
 		int yArr = Integer.parseInt(coupArrivee[1]);
 		
 		boolean coordonneesValides = false;
+		boolean equipeValide = false;
 		if(xDep <= 13 && xDep >= 1 && yDep <= 13 && yDep >= 1 && xArr <= 13 && xArr >= 1 && yArr <= 13 && yArr >= 1) {
 			coordonneesValides = true;
+			int piece = this.board[xDep-1][yDep-1];
+			if(equipe == Equipe.ROUGE) { 
+				//on joue les rouges/blancs
+				if(piece == 4) {
+					equipeValide = true;
+				}
+				else {
+					equipeValide = false;
+				}
+			}
+			else if(equipe == Equipe.NOIR){
+				//on joue les noirs
+				if(piece == 2 || piece == 5) {
+					equipeValide = true;
+				}
+				else {
+					equipeValide = false;
+				}
+			}
+			else {
+				equipeValide = false;
+			}
+			//teste si les coordonnées d'arrivée sont les coins ou le trône
+			if((xArr == 13 && yArr == 13) || (xArr == 13 && yArr == 1) || (xArr == 1 && yArr == 13) || (xArr == 1 && yArr == 1) || (xArr == 7 && yArr == 7)) {
+				if(piece != 5) {
+					//s'il ne s'agit pas du roi
+					coordonneesValides = false;
+				}
+			}
+			
 		}
 		
 		boolean coupValide = true;
@@ -63,10 +94,10 @@ public class Board {
 		 * - La coordonnée d'arrivée est vide
 		 * - Les coordonnées sont entre 1 et 13 (vérifié avant)
 		 * - Il n'y a pas de pièce entre le départ et l'arrivée
-		 * TODO : les coordonnées d'arrivée ne sont pas les coins ni le trône (sauf pour le roi)
-		 * TODO : vérifier si la pièce de départ est bien une pièce du joueur
+		 * - Les coordonnées d'arrivée ne sont pas les coins ni le trône (sauf pour le roi) (vérifié avant)
+		 * - La pièce de départ est bien une pièce du joueur (vérifié avant)
 		 */
-		if(coordonneesValides) {
+		if(coordonneesValides && equipeValide) {
 			if((xDep == xArr || yDep == yArr) && this.getBoard()[xDep-1][yDep-1] != 0 && this.getBoard()[xArr-1][yArr-1] == 0) {
 				Direction dir = directionTo(xDep, yDep, xArr, yArr);
 				
@@ -91,7 +122,12 @@ public class Board {
 		}
 		else {
 			coupValide = false;
-			System.out.println("Coordonnées invalides.");
+			if(!coordonneesValides) {
+				System.out.println("Coordonnées invalides.");
+			}
+			if(!equipeValide) {
+				System.out.println("Équipe invalide.");
+			}
 		}
 		
 		if(coupValide) {

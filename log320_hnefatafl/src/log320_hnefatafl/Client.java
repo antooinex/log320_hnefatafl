@@ -4,6 +4,9 @@ import java.net.*;
 
 
 class Client {
+	
+    static Equipe equipe = Equipe.UNDEFINED;
+	
 	public static void main(String[] args) {
          
 	Socket MyClient;
@@ -24,6 +27,8 @@ class Client {
             System.out.println(cmd);
             // Debut de la partie en joueur blanc
             if(cmd == '1'){
+            	equipe = Equipe.ROUGE;
+            	
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
@@ -41,6 +46,7 @@ class Client {
             }
             // Debut de la partie en joueur Noir
             if(cmd == '2'){
+            	equipe = Equipe.NOIR;
                 System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
                 byte[] aBuffer = new byte[1024];
 				
@@ -65,8 +71,9 @@ class Client {
 					
 			String s = new String(aBuffer);
 			System.out.println("Dernier coup :"+ s);
-			if(board.update(s)) {
+			if(board.update(s, equipe.opposite())) {
 				System.out.println("Le dernier coup est valide.");
+				//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
 				board.draw();
 			}
 			else {
@@ -78,10 +85,12 @@ class Client {
 				System.out.println("Entrez votre coup : ");
 				String move = null;
 				move = console.readLine();				
-				if(board.update(move)) {
+				if(board.update(move, equipe)) {
 					System.out.println("Le coup choisi est valide.");
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
+					//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+					
 					board.draw();
 					moveSent = true;
 				}
