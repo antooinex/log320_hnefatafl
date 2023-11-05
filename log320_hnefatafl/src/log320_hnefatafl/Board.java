@@ -53,7 +53,7 @@ public class Board {
 						int xVoisinDeVoisin = voisinDeVoisin[0];
 						int yVoisinDeVoisin = voisinDeVoisin[1];
 						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
-							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin)) {
+							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
 								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
 							}
@@ -66,7 +66,7 @@ public class Board {
 						int xVoisinDeVoisin = voisinDeVoisin[0];
 						int yVoisinDeVoisin = voisinDeVoisin[1];
 						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
-							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin)) {
+							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
 								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
 							}
@@ -75,6 +75,14 @@ public class Board {
 				}
 			}
 		}
+	}
+	
+	public boolean estLeTrone(int x, int y) {
+		boolean trone = false;
+		if(x == 7 && y == 7) {
+			trone = true;
+		}
+		return trone;
 	}
 	
 	public boolean estUnCoin(int x, int y) {

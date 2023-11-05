@@ -38,7 +38,7 @@ class Client {
                 String s = new String(aBuffer).trim();
                 //System.out.println(s);
                 board.fullUpdate(s);
-                board.draw();
+                //board.draw();
                 System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
                 boolean moveSent = false;
     			boolean joueurIA = true;
@@ -53,7 +53,7 @@ class Client {
     						output.write(move.getBytes(),0,move.length());
     						output.flush();
     						board.removePiece(move, equipe);
-    						board.draw();
+    						//board.draw();
     						moveSent = true;
     					}
     					else {
@@ -69,7 +69,7 @@ class Client {
     					output.write(move.getBytes(),0,move.length());
     					output.flush();
     					board.removePiece(move, equipe);
-    					board.draw();
+    					//board.draw();
     				}
     			}
             }
@@ -85,7 +85,7 @@ class Client {
                 String s = new String(aBuffer).trim();
                 //System.out.println(s);
                 board.fullUpdate(s);
-                board.draw();
+                //board.draw();
             }
 
 
@@ -103,7 +103,7 @@ class Client {
 			if(board.update(s, equipe.opposite(), true)) {
 				System.out.println("Le dernier coup est valide.");
 				board.removePiece(s, equipe.opposite());
-				board.draw();
+				//board.draw();
 			}
 			else {
 				System.out.println("Le dernier coup est invalide.");
@@ -121,7 +121,7 @@ class Client {
 						output.write(move.getBytes(),0,move.length());
 						output.flush();
 						board.removePiece(move, equipe);
-						board.draw();
+						//board.draw();
 						moveSent = true;
 					}
 					else {
@@ -137,7 +137,7 @@ class Client {
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
 					board.removePiece(move, equipe);
-					board.draw();
+					//board.draw();
 				}
 			}
 	    }
