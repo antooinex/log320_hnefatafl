@@ -52,8 +52,7 @@ class Client {
     						System.out.println("Le coup choisi est valide.");
     						output.write(move.getBytes(),0,move.length());
     						output.flush();
-    						//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
-    						
+    						board.removePiece(move, equipe);
     						board.draw();
     						moveSent = true;
     					}
@@ -69,7 +68,7 @@ class Client {
     					System.out.println("Le coup choisi est valide.");
     					output.write(move.getBytes(),0,move.length());
     					output.flush();
-    					//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+    					board.removePiece(move, equipe);
     					board.draw();
     				}
     			}
@@ -103,7 +102,7 @@ class Client {
 			System.out.println("Dernier coup :"+ s);
 			if(board.update(s, equipe.opposite(), true)) {
 				System.out.println("Le dernier coup est valide.");
-				//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+				board.removePiece(s, equipe.opposite());
 				board.draw();
 			}
 			else {
@@ -121,8 +120,7 @@ class Client {
 						System.out.println("Le coup choisi est valide.");
 						output.write(move.getBytes(),0,move.length());
 						output.flush();
-						//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
-						
+						board.removePiece(move, equipe);
 						board.draw();
 						moveSent = true;
 					}
@@ -138,7 +136,7 @@ class Client {
 					System.out.println("Le coup choisi est valide.");
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
-					//TODO : vérifier ici en fonction des règles si une pièce doit être retirée
+					board.removePiece(move, equipe);
 					board.draw();
 				}
 			}

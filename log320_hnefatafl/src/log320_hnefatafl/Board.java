@@ -15,6 +15,83 @@ public class Board {
 		}	
 	}
 	
+	public Move parseMove(String move) {
+		//traduire les coups String en coordonnées int
+		move = move.trim();
+		
+		String[] parts = move.split(" - ");
+		
+		String[] coupDepart = new String[2];
+		String[] coupArrivee = new String[2];
+		
+		coupDepart[0] = parts[0].substring(0,1);
+		coupDepart[1] = parts[0].substring(1);
+		coupArrivee[0] = parts[1].substring(0,1);
+		coupArrivee[1] = parts[1].substring(1);
+		
+		int xDep = coord(coupDepart[0]);
+		int yDep = Integer.parseInt(coupDepart[1]);
+		int xArr = coord(coupArrivee[0]);
+		int yArr = Integer.parseInt(coupArrivee[1]);
+		
+		return new Move(xDep, yDep, xArr, yArr);
+	}
+	
+	public void removePiece(String coup, Equipe equipe) {
+		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
+		Move dernierCoup = parseMove(coup);
+		Direction[] directions = {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT};
+		
+		for (Direction direction : directions) {
+			int[] voisin = getNeighbor(dernierCoup.getxArr(), dernierCoup.getyArr(), direction);
+			int xVoisin = voisin[0];
+			int yVoisin = voisin[1];
+			if (caseDansPlateau(xVoisin, yVoisin)){
+				if(equipe == Equipe.ROUGE) {
+					if(this.board[xVoisin-1][yVoisin-1] == 2) {
+						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
+						int xVoisinDeVoisin = voisinDeVoisin[0];
+						int yVoisinDeVoisin = voisinDeVoisin[1];
+						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
+							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin)) {
+								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								setValue(xVoisin-1, yVoisin-1, 0);
+							}
+						}
+					}
+				}
+				else if (equipe == Equipe.NOIR) {
+					if(this.board[xVoisin-1][yVoisin-1] == 4) {
+						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
+						int xVoisinDeVoisin = voisinDeVoisin[0];
+						int yVoisinDeVoisin = voisinDeVoisin[1];
+						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
+							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin)) {
+								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								setValue(xVoisin-1, yVoisin-1, 0);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public boolean estUnCoin(int x, int y) {
+		boolean coin = false;
+		if((x == 13 && y == 13) || (x == 13 && y == 1) || (x == 1 && y == 13) || (x == 1 && y == 1)) {
+			coin = true;
+		}
+		return coin;
+	}
+	public boolean caseDansPlateau(int x, int y) {
+		boolean dansPlateau = false;
+		if(x >= 1 && x <= 13 && y >= 1 && y <= 13) {
+			dansPlateau = true;
+		}
+		return dansPlateau;
+	}
+	
 	public void fullUpdate(String buffer){
 		
 		String[] parts = buffer.split(" ");
@@ -29,26 +106,14 @@ public class Board {
 		}		
 	}
 	
-	public boolean update(String coup, Equipe equipe, boolean update) {
+	public boolean update(String coup, Equipe equipe, boolean update) {		
+		//mettre à jour le board en vérifiant si le coup est valide
+		Move move = parseMove(coup);
 		
-		coup = coup.trim();
-		
-		String[] parts = coup.split(" - ");
-		
-		String[] coupDepart = new String[2];
-		String[] coupArrivee = new String[2];
-		
-		coupDepart[0] = parts[0].substring(0,1);
-		coupDepart[1] = parts[0].substring(1);
-		coupArrivee[0] = parts[1].substring(0,1);
-		coupArrivee[1] = parts[1].substring(1);
-		
-		//traduire les coups en coordonnées et mettre à jour le board en vérifiant si le coup est valide
-		
-		int xDep = coord(coupDepart[0]);
-		int yDep = Integer.parseInt(coupDepart[1]);
-		int xArr = coord(coupArrivee[0]);
-		int yArr = Integer.parseInt(coupArrivee[1]);
+		int xDep = move.getxDep();
+		int yDep = move.getyDep();
+		int xArr = move.getxArr();
+		int yArr = move.getyArr();
 		
 		boolean coordonneesValides = false;
 		boolean equipeValide = false;
