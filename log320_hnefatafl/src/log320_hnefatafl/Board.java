@@ -3,9 +3,13 @@ package log320_hnefatafl;
 public class Board {
 
 	private int[][] board;
+	private Board parent;
+	private Move coupFromParent;
 	
 	Board(){
 		
+		this.parent = null;
+		this.coupFromParent = null;				
 		this.board = new int[13][13];
 		
 		for(int i = 0; i < 13; i += 1) {
@@ -13,6 +17,21 @@ public class Board {
 				this.board[i][j] = 0;
 			}
 		}	
+	}
+	
+	Board(Board parent, Move coupFromParent){
+		this.parent = parent;
+		this.coupFromParent = coupFromParent;
+		this.board = new int[13][13];
+		int[][] b = parent.getBoard();
+		
+		for(int i = 0; i < 13; i += 1) {
+			for(int j = 0; j < 13; j += 1) {
+				this.board[i][j] = b[i][j];
+			}
+		}
+		
+		this.update(coupFromParent, Client.equipe , true);
 	}
 	
 	public Move parseMove(String move) {
@@ -114,9 +133,9 @@ public class Board {
 		}		
 	}
 	
-	public boolean update(String coup, Equipe equipe, boolean update) {		
+	public boolean update(Move move, Equipe equipe, boolean update) {		
 		//mettre à jour le board en vérifiant si le coup est valide
-		Move move = parseMove(coup);
+		//Move move = parseMove(coup);
 		
 		int xDep = move.getxDep();
 		int yDep = move.getyDep();
