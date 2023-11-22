@@ -136,9 +136,8 @@ public class Hnefatafl implements Ruleset, Serializable {
     }
 
 
-    public ArrayList<Move> getActionsForBoard(Board board) {
+    public ArrayList<Move> getActionsForBoard(Board board, Equipe equipe) {
     	ArrayList<Move> possibilites = new ArrayList<Move>();
-    	StringBuilder sb = new StringBuilder();	
         // Add all of the actions for pieces that the current player owns.
         possibilites.clear();
     	for(int xDep = 1; xDep <= 13; xDep += 1) {
@@ -146,16 +145,10 @@ public class Hnefatafl implements Ruleset, Serializable {
     			for(int xArr = 1; xArr <= 13; xArr += 1) {
     				for(int yArr = 1; yArr <= 13; yArr +=1) {
     					if(xDep == xArr || yDep == yArr) {
-							sb.append(board.antiCoord(xDep));
-							sb.append(Integer.toString(yDep));
-							sb.append(" - ");
-							sb.append(board.antiCoord(xArr));
-							sb.append(Integer.toString(yArr));
 							Move m = new Move(xDep, yDep, xArr, yArr);
-							if(board.update(m, Client.equipe, false)){
+							if(board.update(m, equipe, false)){
 								possibilites.add(m);
 							}
-							sb.setLength(0);
     					}
     				}
     			}

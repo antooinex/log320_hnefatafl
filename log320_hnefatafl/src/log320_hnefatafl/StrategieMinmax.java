@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import ai.MinimaxStrategy.Result;
-
 /**
  * Implements a bot that uses the Minimax strategy to chooses moves.
  */
@@ -16,9 +14,9 @@ public class StrategieMinmax implements Strategie {
 
     /** Helper class that represents a (action, score) tuple */
     public static final class Result {
-        public final Action action;
+        public final Move action;
         public final float score;
-        public Result(Action action, float score) {
+        public Result(Move action, float score) {
             this.action = action;
             this.score = score;
         }
@@ -59,24 +57,23 @@ public class StrategieMinmax implements Strategie {
         leaves = 0;
 
         System.out.println(TAG + ": Starting a Minimax search with depth " + searchDepth + ".");
-        Action action = max(history, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
+        Move action = max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
         System.out.println(TAG + ": MinimaxStrategy searched " + leaves + " possible game states.");
 
         // Should never happen, but to prevent crashes.
         if (action == null) {
             System.err.print(TAG + ": MinimaxStrategy returned null action. Falling back to RandomStrategy.");
-            return new RandomStrategy().decide(history, actions);
+            return new StrategieAleatoire().coupAJouer(currentBoard, Client.equipe);
         }
 
-        return action;
+        return action.toString();
     }
 
     public static float WIN_SCORE = 1000.0f;
     public static float LOSE_SCORE = -1000.0f;
 
     /** Evaluate how good the board for the given player. */
-    public static float eval(History history, Player player) {
-        Board board = history.getCurrentBoard();
+    public static float eval(Board board, Player player) {
 
         // If the game already has a winner, then return -infinity or infinity
         if(board.isOver()) {
@@ -129,7 +126,7 @@ public class StrategieMinmax implements Strategie {
         }
 
         Result max = null;
-        for(Move action : ruleset.getActionsForBoard(board)) {
+        for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
             // Simulate a step, and then recurse.
             //Result result = min(history.advance(action, ruleset.step(history, action, null)), depth - 1, alpha, beta);
             Board newBoard = new Board(board, action);
@@ -155,7 +152,7 @@ public class StrategieMinmax implements Strategie {
         }
 
         Result min = null;
-        for(Move action : ruleset.getActionsForBoard(board)) {
+        for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
             // Simulate a step, and then recurse.
             //Result result = max(history.advance(action, ruleset.step(history, action, null)), depth - 1, alpha, beta);
             Board newBoard = new Board(board, action);
