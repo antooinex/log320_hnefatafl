@@ -1,11 +1,6 @@
 package log320_hnefatafl;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 /**
  * Implements a bot that uses the Minimax strategy to chooses moves.
  */
@@ -73,7 +68,7 @@ public class StrategieMinmax implements Strategie {
     public static float LOSE_SCORE = -1000.0f;
 
     /** Evaluate how good the board for the given player. */
-    public static float eval(Board board, Player player) {
+    public static float eval(Board board, Equipe equipe) {
     	
     	Board parent = board.getParent();
     	int historySize = 0;
@@ -85,12 +80,28 @@ public class StrategieMinmax implements Strategie {
     		historySize++;
     	}
     	
+    	Winner gagnantEquipe = Winner.UNDETERMINED;
+    	
+        if (equipe == Equipe.ROUGE) {
+        	gagnantEquipe = Winner.ATTACKER;
+        }
+        else{
+        	gagnantEquipe = Winner.DEFENDER;
+        }
+    	
         // If the game already has a winner, then return -infinity or infinity
         if(board.isOver()) {
-            if(board.getWinner() == Winner.DRAW) return 0;
-            else return board.getWinner().equals(Winner.fromPlayer(player))
-                    ? WIN_SCORE - historySize // Penalize the win by match size, so that the MiniMax search prefers immediate wins.
-                    : LOSE_SCORE; // A loss is always a loss.
+            if(board.getWinner() == Winner.DRAW) {
+            	return 0;
+            }
+            else{
+            	if(board.getWinner() == gagnantEquipe){
+            		return WIN_SCORE - historySize;
+            	}
+            	else {
+            		return LOSE_SCORE;
+            	}
+            }
         }
 
         float score = 0.0f;
@@ -99,7 +110,7 @@ public class StrategieMinmax implements Strategie {
         int rouges = board.getnbPiecesRouge();
         int noires = board.getnbPiecesNoir();
         
-        if(player == Player.ATTACKER) {
+        if(equipe == Equipe.ROUGE) {
         	score += (rouges - noires);
         }
         else {
@@ -107,11 +118,10 @@ public class StrategieMinmax implements Strategie {
         }
         
         // Find the shortest distance between the King and any corner of the board.
-        for(Position kingPos : board.getPositionsOfPiece(Piece.KING)) {
-            int topLeftDist = kingPos.distanceTo(new Position(0, 0));
-            int topRightDist = kingPos.distanceTo(new Position(board.getBoardSize() - 1, 0));
-            int bottomLeftDist = kingPos.distanceTo(new Position(0, board.getBoardSize() - 1));
-            int bottomRightDist = kingPos.distanceTo(new Position(board.getBoardSize() - 1, board.getBoardSize() - 1));
+        	int topLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
+        	int topRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
+        	int bottomLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
+        	int bottomRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
 
             int shortestDist = Math.min(
                     Math.min(topLeftDist, topRightDist),
@@ -120,11 +130,10 @@ public class StrategieMinmax implements Strategie {
 
             // For the attacking player, the larger the distance, the higher the score. For the
             // defending player, the shorter the distance, the higher the score.
-            if (player == Player.ATTACKER)
+            if (equipe == Equipe.ROUGE)
                 score += 0.5f*shortestDist;
             else
                 score -= 0.5f*shortestDist;
-        }
 
         return score;
     }
@@ -140,7 +149,7 @@ public class StrategieMinmax implements Strategie {
     	}
     	if(board.isOver() || depth == 0) {
             ++leaves; // We've reached a leaf.
-            return new Result(null, eval(board, player));
+            return new Result(null, eval(board, Client.equipe));
         }
 
         Result max = null;
@@ -170,7 +179,7 @@ public class StrategieMinmax implements Strategie {
     	}
         if(board.isOver() || depth == 0) {
             ++leaves; // We've reached a leaf.
-            return new Result(null, eval(board, player));
+            return new Result(null, eval(board, Client.equipe));
         }
 
         Result min = null;
