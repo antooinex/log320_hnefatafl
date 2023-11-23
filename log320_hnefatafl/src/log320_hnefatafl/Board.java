@@ -7,6 +7,10 @@ public class Board {
 	private Move coupFromParent;
 	private Winner winner = Winner.UNDETERMINED;
 	private boolean gameOver = false;
+	private int nbPiecesNoir = 13;
+	private int nbPiecesRouge = 24;
+	private int xRoi = 6;
+	private int yRoi = 6;
 	
 	Board(){
 		
@@ -26,6 +30,10 @@ public class Board {
 		this.coupFromParent = coupFromParent;
 		this.board = new int[13][13];
 		int[][] b = parent.getBoard();
+		this.nbPiecesNoir = parent.getnbPiecesNoir();
+		this.nbPiecesRouge = parent.getnbPiecesRouge();
+		this.xRoi = parent.getxRoi();
+		this.yRoi = parent.getyRoi();
 		
 		for(int i = 0; i < 13; i += 1) {
 			for(int j = 0; j < 13; j += 1) {
@@ -55,6 +63,7 @@ public class Board {
 							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
 								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
+								nbPiecesNoir -= 1;
 							}
 						}
 					}
@@ -77,6 +86,7 @@ public class Board {
 							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
 								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
+								nbPiecesRouge -= 1;
 							}
 						}
 					}
@@ -119,7 +129,7 @@ public class Board {
 				this.board[i][j] = Integer.parseInt(parts[n]);
 				n += 1;
 			}
-		}		
+		}
 	}
 	
 	public boolean update(Move move, Equipe equipe, boolean update) {		
@@ -221,6 +231,10 @@ public class Board {
 			int piece = getBoard()[xDep-1][yDep-1];
 			setValue(xArr-1, yArr-1, piece);
 			setValue(xDep-1, yDep-1, 0);
+			if(getBoard()[xArr-1][yArr-1] == 5){
+			    this.xRoi=xArr-1;
+			    this.yRoi=yArr-1;
+			}
 			this.removePiece(move, equipe);
 			//System.out.println("Plateau mis à jour.");
 		}
@@ -291,6 +305,42 @@ public class Board {
 				this.board[i][j] = 0;
 			}
 		}
+	}
+	
+	public void setOver(boolean over) {
+		this.gameOver = over;
+	}
+	
+	public void setWinner(Winner winner) {
+		this.winner = winner;
+	}
+	
+	public boolean isOver() {
+		return this.gameOver;
+	}
+	
+	public Winner getWinner() {
+		return this.winner;
+	}
+	
+	public Board getParent() {
+		return this.parent;
+	}
+	
+	public int getnbPiecesNoir() {
+		return this.nbPiecesNoir;
+	}
+	
+	public int getnbPiecesRouge() {
+		return this.nbPiecesRouge;
+	}
+	
+	public int getxRoi() {
+		return this.xRoi;
+	}
+	
+	public int getyRoi() {
+		return this.yRoi;
 	}
 	
 }

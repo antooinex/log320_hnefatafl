@@ -74,25 +74,38 @@ public class StrategieMinmax implements Strategie {
 
     /** Evaluate how good the board for the given player. */
     public static float eval(Board board, Player player) {
-
+    	
+    	Board parent = board.getParent();
+    	int historySize = 0;
+    	if(parent != null) {
+    		historySize++;
+    	}
+    	while(parent != null) {
+    		parent = parent.getParent();
+    		historySize++;
+    	}
+    	
         // If the game already has a winner, then return -infinity or infinity
         if(board.isOver()) {
             if(board.getWinner() == Winner.DRAW) return 0;
             else return board.getWinner().equals(Winner.fromPlayer(player))
-                    ? WIN_SCORE - history.size() // Penalize the win by match size, so that the MiniMax search prefers immediate wins.
+                    ? WIN_SCORE - historySize // Penalize the win by match size, so that the MiniMax search prefers immediate wins.
                     : LOSE_SCORE; // A loss is always a loss.
         }
 
         float score = 0.0f;
 
         // Start by counting how many pieces each player has.
-        for (Map.Entry<Position, Piece> piece : board.getPieces().getEntries()) {
-            if(player.ownsPiece(piece.getValue()))
-                score += 1.0f;
-            else
-                score -= 1.0f;
+        int rouges = board.getnbPiecesRouge();
+        int noires = board.getnbPiecesNoir();
+        
+        if(player == Player.ATTACKER) {
+        	score += (rouges - noires);
         }
-
+        else {
+        	score += (noires - rouges);
+        }
+        
         // Find the shortest distance between the King and any corner of the board.
         for(Position kingPos : board.getPositionsOfPiece(Piece.KING)) {
             int topLeftDist = kingPos.distanceTo(new Position(0, 0));
@@ -120,13 +133,18 @@ public class StrategieMinmax implements Strategie {
     public static final boolean ALPHA_BETA_PRUNING = true;
 
     public Result max(Board board, int depth, float alpha, float beta) {
+    	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
+    	if(possibilities.isEmpty()) {
+    		board.setOver(true);
+    		board.setWinner(Winner.DRAW);
+    	}
     	if(board.isOver() || depth == 0) {
             ++leaves; // We've reached a leaf.
-            return new Result(null, eval(history, player));
+            return new Result(null, eval(board, player));
         }
 
         Result max = null;
-        for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
+        for(Move action : possibilities) {
             // Simulate a step, and then recurse.
             //Result result = min(history.advance(action, ruleset.step(history, action, null)), depth - 1, alpha, beta);
             Board newBoard = new Board(board, action);
@@ -146,9 +164,13 @@ public class StrategieMinmax implements Strategie {
     }
 
     public Result min(Board board, int depth, float alpha, float beta) {
+    	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
+    	if(possibilities.isEmpty()) {
+    		board.setOver(true);
+    	}
         if(board.isOver() || depth == 0) {
             ++leaves; // We've reached a leaf.
-            return new Result(null, eval(history, player));
+            return new Result(null, eval(board, player));
         }
 
         Result min = null;
