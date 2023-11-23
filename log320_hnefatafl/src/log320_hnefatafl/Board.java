@@ -36,28 +36,6 @@ public class Board {
 		this.update(coupFromParent, Client.equipe , true);
 	}
 	
-	public Move parseMove(String move) {
-		//traduire les coups String en coordonnées int
-		move = move.trim();
-		
-		String[] parts = move.split(" - ");
-		
-		String[] coupDepart = new String[2];
-		String[] coupArrivee = new String[2];
-		
-		coupDepart[0] = parts[0].substring(0,1);
-		coupDepart[1] = parts[0].substring(1);
-		coupArrivee[0] = parts[1].substring(0,1);
-		coupArrivee[1] = parts[1].substring(1);
-		
-		int xDep = coord(coupDepart[0]);
-		int yDep = Integer.parseInt(coupDepart[1]);
-		int xArr = coord(coupArrivee[0]);
-		int yArr = Integer.parseInt(coupArrivee[1]);
-		
-		return new Move(xDep, yDep, xArr, yArr);
-	}
-	
 	public void removePiece(Move coup, Equipe equipe) {
 		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
 		Move dernierCoup = coup;
@@ -145,9 +123,7 @@ public class Board {
 	}
 	
 	public boolean update(Move move, Equipe equipe, boolean update) {		
-		//mettre à jour le board en vérifiant si le coup est valide
-		//Move move = parseMove(coup);
-		
+		//mettre à jour le board en vérifiant si le coup est valide		
 		int xDep = move.getxDep();
 		int yDep = move.getyDep();
 		int xArr = move.getxArr();
@@ -293,73 +269,7 @@ public class Board {
         }
         else return Direction.DOWN; //ne devrait jamais être retourné
     }
-	
-	public int coord(String lettre) {
-		switch(lettre) {
-		case "A":
-			return 1;
-		case "B":
-			return 2;
-		case "C":
-			return 3;
-		case "D":
-			return 4;
-		case "E":
-			return 5;
-		case "F":
-			return 6;
-		case "G":
-			return 7;
-		case "H":
-			return 8;
-		case "I":
-			return 9;
-		case "J":
-			return 10;
-		case "K":
-			return 11;
-		case "L":
-			return 12;
-		case "M":
-			return 13;
-		default:
-			return -1;
-		}
-	}
-	
-	public String antiCoord(int abs) {
-		switch(abs) {
-		case 1:
-			return "A";
-		case 2:
-			return "B";
-		case 3:
-			return "C";
-		case 4:
-			return "D";
-		case 5:
-			return "E";
-		case 6:
-			return "F";
-		case 7:
-			return "G";
-		case 8:
-			return "H";
-		case 9:
-			return "I";
-		case 10:
-			return "J";
-		case 11:
-			return "K";
-		case 12:
-			return "L";
-		case 13:
-			return "M";
-		default:
-			return "Z";
-		}
-	}
-	
+    
 	public void draw() {
 		StringBuilder sb = new StringBuilder();
 		for (int j = 12; j >= 0; j -= 1) {
