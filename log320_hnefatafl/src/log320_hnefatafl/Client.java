@@ -52,7 +52,7 @@ class Client {
     						System.out.println("Le coup choisi est valide.");
     						output.write(move.getBytes(),0,move.length());
     						output.flush();
-    						board.removePiece(move, equipe);
+    						//board.removePiece(move, equipe);
     						//board.draw();
     						moveSent = true;
     					}
@@ -68,7 +68,7 @@ class Client {
     					System.out.println("Le coup choisi est valide.");
     					output.write(move.getBytes(),0,move.length());
     					output.flush();
-    					board.removePiece(move, equipe);
+    					//board.removePiece(move, equipe);
     					//board.draw();
     				}
     			}
@@ -102,7 +102,7 @@ class Client {
 			System.out.println("Dernier coup :"+ s);
 			if(board.update(new Move(s), equipe.opposite(), true)) {
 				System.out.println("Le dernier coup est valide.");
-				board.removePiece(s, equipe.opposite());
+				//board.removePiece(s, equipe.opposite());
 				//board.draw();
 			}
 			else {
@@ -120,7 +120,7 @@ class Client {
 						System.out.println("Le coup choisi est valide.");
 						output.write(move.getBytes(),0,move.length());
 						output.flush();
-						board.removePiece(move, equipe);
+						//board.removePiece(move, equipe);
 						//board.draw();
 						moveSent = true;
 					}
@@ -136,7 +136,7 @@ class Client {
 					System.out.println("Le coup choisi est valide.");
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
-					board.removePiece(move, equipe);
+					//board.removePiece(move, equipe);
 					//board.draw();
 				}
 			}
