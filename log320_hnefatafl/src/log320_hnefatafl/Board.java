@@ -5,6 +5,8 @@ public class Board {
 	private int[][] board;
 	private Board parent;
 	private Move coupFromParent;
+	private Winner winner = Winner.UNDETERMINED;
+	private boolean gameOver = false;
 	
 	Board(){
 		
@@ -56,9 +58,9 @@ public class Board {
 		return new Move(xDep, yDep, xArr, yArr);
 	}
 	
-	public void removePiece(String coup, Equipe equipe) {
+	public void removePiece(Move coup, Equipe equipe) {
 		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
-		Move dernierCoup = parseMove(coup);
+		Move dernierCoup = coup;
 		Direction[] directions = {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT};
 		
 		for (Direction direction : directions) {
@@ -67,7 +69,7 @@ public class Board {
 			int yVoisin = voisin[1];
 			if (caseDansPlateau(xVoisin, yVoisin)){
 				if(equipe == Equipe.ROUGE) {
-					if(this.board[xVoisin-1][yVoisin-1] == 2) {
+					if(this.board[xVoisin-1][yVoisin-1] == 2) { //si le voisin est une pièce noire mais pas roi
 						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
 						int xVoisinDeVoisin = voisinDeVoisin[0];
 						int yVoisinDeVoisin = voisinDeVoisin[1];
@@ -80,6 +82,15 @@ public class Board {
 					}
 				}
 				else if (equipe == Equipe.NOIR) {
+					int xArr = coup.getxArr();
+					int yArr = coup.getyArr();
+					//le roi est dans un coin : victoire des noirs
+					if(this.board[xArr-1][yArr-1] == 5) {
+						if ((xArr-1 == 0 && yArr-1 == 0) || (xArr-1 == 0 && yArr-1 == 12) || (xArr-1 == 12 && yArr-1 == 0) || (xArr-1 == 12 && yArr-1 == 12)) {
+							this.winner = Winner.DEFENDER;
+							this.gameOver = true;
+						}
+					}
 					if(this.board[xVoisin-1][yVoisin-1] == 4) {
 						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
 						int xVoisinDeVoisin = voisinDeVoisin[0];
@@ -234,6 +245,7 @@ public class Board {
 			int piece = getBoard()[xDep-1][yDep-1];
 			setValue(xArr-1, yArr-1, piece);
 			setValue(xDep-1, yDep-1, 0);
+			this.removePiece(move, equipe);
 			//System.out.println("Plateau mis à jour.");
 		}
 		
