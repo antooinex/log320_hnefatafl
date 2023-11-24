@@ -17,14 +17,13 @@ public class StrategieMinmax implements Strategie {
         }
     }
 
+    private final Hnefatafl ruleset = new Hnefatafl();
+    
     /** The default value for searchDepth */
     public static final int DEFAULT_SEARCH_DEPTH = 2;
 
-    /** The player that the AI represents. */
-    private final Player player;
-
     /** The number of Plys to search forward */
-    private final int searchDepth;
+    private final int searchDepth = ruleset.getAISearchDepth();
 
     /**
      * Variable used for counting how many leaf nodes of the game tree we visit. It is set to zero
@@ -32,19 +31,8 @@ public class StrategieMinmax implements Strategie {
      * */
     private int leaves = 0;
 
-    private final Hnefatafl ruleset;
-
-    public StrategieMinmax(Hnefatafl ruleset, Player player) {
-        this(ruleset, player, ruleset.getAISearchDepth());
-    }
-
-    public StrategieMinmax(Hnefatafl ruleset, Player player, int searchDepth) {
-        this.ruleset = ruleset;
-        this.player = player;
-        this.searchDepth = searchDepth;
-    }
-
-
+    
+    
     @Override
     public String coupAJouer(Board currentBoard, Equipe equipe) {
 

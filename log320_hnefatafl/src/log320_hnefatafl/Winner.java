@@ -12,19 +12,4 @@ public enum Winner {
     DEFENDER,
     /** The game has ended in a tie / draw */
     DRAW;
-
-    public static Winner fromPlayer(Player player) {
-        if (player.equals(Player.ATTACKER)) return ATTACKER;
-        else return DEFENDER;
-    }
-
-    public Player toPlayer() {
-        switch (this) {
-            case ATTACKER:
-                return Player.ATTACKER;
-            case DEFENDER:
-                return Player.DEFENDER;
-        }
-        throw new UnsupportedOperationException(this.toString() + " cannot be converted to a Player.");
-    }
 }
