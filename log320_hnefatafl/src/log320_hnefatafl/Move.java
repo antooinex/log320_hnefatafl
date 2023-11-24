@@ -68,10 +68,10 @@ public class Move {
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();	
-		sb.append(alphabet[xDep+1]);
+		sb.append(alphabet[xDep-1]);
 		sb.append(Integer.toString(yDep));
 		sb.append(" - ");
-		sb.append(alphabet[xArr+1]);
+		sb.append(alphabet[xArr-1]);
 		sb.append(Integer.toString(yArr));
 		return sb.toString();
 	}

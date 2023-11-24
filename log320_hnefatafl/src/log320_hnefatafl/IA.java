@@ -5,6 +5,7 @@ public class IA {
 	private Strategie strategie;
 	
 	public IA(){
+		//this.strategie = new StrategieAleatoire();
 		this.strategie = new StrategieMinmax();
 	}
 	

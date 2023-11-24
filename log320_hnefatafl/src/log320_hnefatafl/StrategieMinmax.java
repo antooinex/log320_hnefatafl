@@ -106,23 +106,25 @@ public class StrategieMinmax implements Strategie {
         }
         
         // Find the shortest distance between the King and any corner of the board.
-        	int topLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
-        	int topRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
-        	int bottomLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
-        	int bottomRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
+    	int topLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
+    	int topRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
+    	int bottomLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
+    	int bottomRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
 
-            int shortestDist = Math.min(
-                    Math.min(topLeftDist, topRightDist),
-                    Math.min(bottomLeftDist, bottomRightDist)
-            );
+        int shortestDist = Math.min(
+                Math.min(topLeftDist, topRightDist),
+                Math.min(bottomLeftDist, bottomRightDist)
+        );
 
-            // For the attacking player, the larger the distance, the higher the score. For the
-            // defending player, the shorter the distance, the higher the score.
-            if (equipe == Equipe.ROUGE)
-                score += 0.5f*shortestDist;
-            else
-                score -= 0.5f*shortestDist;
-
+        // For the attacking player, the larger the distance, the higher the score. For the
+        // defending player, the shorter the distance, the higher the score.
+        if (equipe == Equipe.ROUGE){
+            score += 0.5f*shortestDist;
+        }
+        else{
+            score -= 0.5f*shortestDist;
+        }
+        
         return score;
     }
 

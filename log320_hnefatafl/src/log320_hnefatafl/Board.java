@@ -48,6 +48,7 @@ public class Board {
 		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
 		Move dernierCoup = coup;
 		Direction[] directions = {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT};
+		int compteurRoi = 0;
 		
 		for (Direction direction : directions) {
 			int[] voisin = getNeighbor(dernierCoup.getxArr(), dernierCoup.getyArr(), direction);
@@ -61,7 +62,7 @@ public class Board {
 						int yVoisinDeVoisin = voisinDeVoisin[1];
 						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
 							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
-								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
 								nbPiecesNoir -= 1;
 							}
@@ -84,7 +85,7 @@ public class Board {
 						int yVoisinDeVoisin = voisinDeVoisin[1];
 						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
 							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
-								System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
 								setValue(xVoisin-1, yVoisin-1, 0);
 								nbPiecesRouge -= 1;
 							}
@@ -92,7 +93,22 @@ public class Board {
 					}
 				}
 			}
+			//vérification si le roi est entouré
+			//TODO : vérifier si ça marche + faire les tests avec les coins et les murs
+			int[] voisinRoi = getNeighbor(xRoi, yRoi, direction);
+			int xVoisinRoi = voisinRoi[0];
+			int yVoisinRoi = voisinRoi[1];
+			if (caseDansPlateau(xVoisinRoi, yVoisinRoi)){
+				if(this.board[xVoisinRoi-1][yVoisinRoi-1] == 4) {
+					compteurRoi++;
+				}
+			}	
 		}
+		if(compteurRoi == 4) {
+			System.out.println("ROI ENTOURÉ");
+			this.winner = Winner.ATTACKER;
+			this.gameOver = true;
+		}	
 	}
 	
 	public boolean estLeTrone(int x, int y) {
