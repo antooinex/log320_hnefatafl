@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Hnefatafl {
 
     public int getAISearchDepth() {
-        return 2;
+        return 3;
     }
 
     public ArrayList<Move> getActionsForBoard(Board board, Equipe equipe) {
@@ -17,10 +17,15 @@ public class Hnefatafl {
     			for(int xArr = 1; xArr <= 13; xArr += 1) {
     				for(int yArr = 1; yArr <= 13; yArr +=1) {
     					if(xDep == xArr || yDep == yArr) {
-							Move m = new Move(xDep, yDep, xArr, yArr);
-							if(board.update(m, equipe, false)){
-								possibilites.add(m);
-							}
+    						int piece = board.getBoard()[xDep-1][yDep-1];
+    						if(piece != 0){
+	    						if(piece != 0 && ((piece == 4 && equipe == Equipe.ROUGE) || equipe == Equipe.NOIR)) {
+									Move m = new Move(xDep, yDep, xArr, yArr);
+									if(board.update(m, equipe, false)){
+										possibilites.add(m);
+									}
+	    						}
+	    					}
     					}
     				}
     			}

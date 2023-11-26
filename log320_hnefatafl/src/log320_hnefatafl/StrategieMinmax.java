@@ -5,7 +5,8 @@ import java.util.ArrayList;
  * Implements a bot that uses the Minimax strategy to chooses moves.
  */
 public class StrategieMinmax implements Strategie {
-    private final String TAG = "MinimaxStrategy";
+	
+    private ArrayList<Move> moveHistory = new ArrayList<Move>();
 
     /** Helper class that represents a (action, score) tuple */
     public static final class Result {
@@ -39,14 +40,22 @@ public class StrategieMinmax implements Strategie {
         // Clear leaves count.
         leaves = 0;
 
-        System.out.println(TAG + ": Starting a Minimax search with depth " + searchDepth + ".");
+        System.out.println("Recherche en cours : minmax profondeur " + searchDepth + ".");
         Move action = max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
-        System.out.println(TAG + ": MinimaxStrategy searched " + leaves + " possible game states.");
+        System.out.println("Noeuds explorés : " +leaves + ".");
+        
+        if(moveHistory.size()>=2 && moveHistory.get(moveHistory.size()-2).equals(action)) {
+        	//au cas où le coup a déjà été joué à l'avant-dernier coup
+        	action = null;
+        }
+        else {
+        	moveHistory.add(action);
+        }
 
-        // Should never happen, but to prevent crashes.
         if (action == null) {
-            System.err.print(TAG + ": MinimaxStrategy returned null action. Falling back to RandomStrategy.");
-            return new StrategieAleatoire().coupAJouer(currentBoard, Client.equipe);
+            System.err.println("Utilisation de la stratégie Aléatoire.");
+            action = new Move(new StrategieAleatoire().coupAJouer(currentBoard, Client.equipe));
+            moveHistory.add(action);
         }
 
         return action.toString();
@@ -98,11 +107,31 @@ public class StrategieMinmax implements Strategie {
         int rouges = board.getnbPiecesRouge();
         int noires = board.getnbPiecesNoir();
         
-        if(equipe == Equipe.ROUGE) {
+        if(equipe == Equipe.ROUGE) { //si on joue les rouges
         	score += (rouges - noires);
+        	/*if(noires <= board.getParent().getnbPiecesNoir() ) { //si l'enfant a moins de noires que le parent
+        		score += 100f;
+        	}
+        	else{
+        		//score -= 100f;
+        	}
+   
+        	if(rouges < board.getParent().getnbPiecesRouge()) { //si l'enfant a moins de rouges que le parent
+        		score -= 100f;
+        	}*/
         }
-        else {
+        else { //si on joue les noirs
         	score += (noires - rouges);
+        	/*if(rouges <= board.getParent().getnbPiecesRouge()) { //si l'enfant a moins de rouges que le parent
+        		score += 100f;
+        	}
+        	else {
+        		//score -= 500f;
+        	}
+        	
+        	if(noires < board.getParent().getnbPiecesNoir() ) { //si l'enfant a moins de noires que le parent
+        		score -= 100f;
+        	}*/
         }
         
         // Find the shortest distance between the King and any corner of the board.
@@ -118,7 +147,7 @@ public class StrategieMinmax implements Strategie {
 
         // For the attacking player, the larger the distance, the higher the score. For the
         // defending player, the shorter the distance, the higher the score.
-        if (equipe == Equipe.ROUGE){
+       if (equipe == Equipe.ROUGE){
             score += 0.5f*shortestDist;
         }
         else{
@@ -145,11 +174,8 @@ public class StrategieMinmax implements Strategie {
         Result max = null;
         for(Move action : possibilities) {
             // Simulate a step, and then recurse.
-            //Result result = min(history.advance(action, ruleset.step(history, action, null)), depth - 1, alpha, beta);
             Board newBoard = new Board(board, action);
             Result result = min(newBoard, depth - 1, alpha, beta);
-            
-            //Result result = min(new Board())
 
             if(max == null || result.score > max.score)
                 max = new Result(action, result.score);
@@ -159,6 +185,7 @@ public class StrategieMinmax implements Strategie {
                 if(beta <= alpha) break;
             }
         }
+        //System.out.println(max.score);
         return max;
     }
 
@@ -175,11 +202,9 @@ public class StrategieMinmax implements Strategie {
         Result min = null;
         for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
             // Simulate a step, and then recurse.
-            //Result result = max(history.advance(action, ruleset.step(history, action, null)), depth - 1, alpha, beta);
             Board newBoard = new Board(board, action);
             Result result = max(newBoard, depth - 1, alpha, beta);
             
-
             if(min == null || result.score < min.score)
                 min = new Result(action, result.score);
 

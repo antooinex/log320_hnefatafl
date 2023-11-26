@@ -108,4 +108,13 @@ public class Move {
 			return -1;
 		}
 	}
+	
+	public boolean equals(Move other) {
+		if(this.xDep == other.xDep && this.yDep == other.yDep && this.xArr == other.xArr && this.yArr == other.yArr) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
