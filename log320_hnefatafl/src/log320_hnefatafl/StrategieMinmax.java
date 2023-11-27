@@ -149,6 +149,7 @@ public class StrategieMinmax implements Strategie {
     	int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
     	int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
     	int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
+    	int roiEntoure = 0;
 
         int shortestDist = Math.min(
                 Math.min(topLeftDist, topRightDist),
@@ -162,29 +163,34 @@ public class StrategieMinmax implements Strategie {
             if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
             	if(xRoi < 12) {
 		            if(actualBoard[xRoi+1][yRoi] == 4 && xRoi < 12) {
-		            	score += 1f;
+		            	//score += 1f;
+		            	roiEntoure++;
 		            }
 	            }
             	if(yRoi < 12) {
 		            if(actualBoard[xRoi][yRoi+1] == 4) {
-		            	score += 1f;
+		            	//score += 1f;
+		            	roiEntoure++;
 		            }
             	}
 	            if(xRoi > 1) {
 		            if(actualBoard[xRoi-1][yRoi] == 4) {
-		            	score += 1f;
+		            	//score += 1f;
+		            	roiEntoure++;
 		            }
-		            }
+		        }
 	            if(yRoi > 1) {
 		            if(actualBoard[xRoi][yRoi-1] == 4) {
-		            	score += 1f;
+		            	//score += 1f;
+		            	roiEntoure++;
 		            }
 	            }
             }
+            score += roiEntoure*10/4;
         }
         else{
             score -= 0.5f*shortestDist;
-            /*if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
+            if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
 	            if(actualBoard[xRoi+1][yRoi] == 4) {
 	            	score -= 1f;
 	            }
@@ -197,10 +203,10 @@ public class StrategieMinmax implements Strategie {
 	            if(actualBoard[xRoi][yRoi-1] == 4) {
 	            	score -= 1f;
 	            }
-            }*/
+            }
         }
-        
-        return score;
+       
+       return score;
     }
 
     /** Whether or not to use ALPHA_BETA_PRUNING to prune search paths */
