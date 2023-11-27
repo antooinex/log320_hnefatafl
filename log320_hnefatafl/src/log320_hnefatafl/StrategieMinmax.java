@@ -1,6 +1,7 @@
 package log320_hnefatafl;
 
 import java.util.ArrayList;
+import java.util.Date;
 /**
  * Implements a bot that uses the Minimax strategy to chooses moves.
  */
@@ -8,6 +9,10 @@ public class StrategieMinmax implements Strategie {
 	
     private ArrayList<Move> moveHistory = new ArrayList<Move>();
 
+    private long startTime;
+    private long elapsedTime;
+    private int WAIT_TIME_MILLI = 4800;
+    
     /** Helper class that represents a (action, score) tuple */
     public static final class Result {
         public final Move action;
@@ -40,6 +45,9 @@ public class StrategieMinmax implements Strategie {
         // Clear leaves count.
         leaves = 0;
 
+        startTime = System.currentTimeMillis();
+        elapsedTime = 0L;
+        
         System.out.println("Recherche en cours : minmax profondeur " + searchDepth + ".");
         Move action = max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
         System.out.println("Noeuds explorés : " +leaves + ".");
@@ -162,6 +170,8 @@ public class StrategieMinmax implements Strategie {
 
     public Result max(Board board, int depth, float alpha, float beta) {
     	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
+    	elapsedTime = (new Date()).getTime() - startTime;
+    	
     	if(possibilities.isEmpty()) {
     		board.setOver(true);
     		board.setWinner(Winner.DRAW);
@@ -174,6 +184,10 @@ public class StrategieMinmax implements Strategie {
         Result max = null;
         for(Move action : possibilities) {
             // Simulate a step, and then recurse.
+        	if(elapsedTime >= WAIT_TIME_MILLI) {
+        		break;
+        	}
+        	
             Board newBoard = new Board(board, action);
             Result result = min(newBoard, depth - 1, alpha, beta);
 
@@ -191,6 +205,7 @@ public class StrategieMinmax implements Strategie {
 
     public Result min(Board board, int depth, float alpha, float beta) {
     	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
+    	elapsedTime = (new Date()).getTime() - startTime;
     	if(possibilities.isEmpty()) {
     		board.setOver(true);
     	}
@@ -202,6 +217,9 @@ public class StrategieMinmax implements Strategie {
         Result min = null;
         for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
             // Simulate a step, and then recurse.
+        	if(elapsedTime >= WAIT_TIME_MILLI) {
+        		break;
+        	}        	
             Board newBoard = new Board(board, action);
             Result result = max(newBoard, depth - 1, alpha, beta);
             
