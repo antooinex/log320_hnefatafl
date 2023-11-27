@@ -4,7 +4,6 @@ public class Board {
 
 	private int[][] board;
 	private Board parent;
-	private Move coupFromParent;
 	private Winner winner = Winner.UNDETERMINED;
 	private boolean gameOver = false;
 	private int nbPiecesNoir = 13;
@@ -14,8 +13,7 @@ public class Board {
 	
 	Board(){
 		
-		this.parent = null;
-		this.coupFromParent = null;				
+		this.parent = null;			
 		this.board = new int[13][13];
 		
 		for(int i = 0; i < 13; i += 1) {
@@ -25,9 +23,8 @@ public class Board {
 		}	
 	}
 	
-	Board(Board parent, Move coupFromParent){
+	Board(Board parent, Move coupFromParent, Equipe equipe){
 		this.parent = parent;
-		this.coupFromParent = coupFromParent;
 		this.board = new int[13][13];
 		int[][] b = parent.getBoard();
 		this.nbPiecesNoir = parent.getnbPiecesNoir();
@@ -41,7 +38,7 @@ public class Board {
 			}
 		}
 		
-		this.update(coupFromParent, Client.equipe , true);
+		this.update(coupFromParent, equipe , true);
 	}
 	
 	public void removePiece(Move coup, Equipe equipe) {

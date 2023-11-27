@@ -52,11 +52,11 @@ public class StrategieMinmax implements Strategie {
         Move action = max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
         System.out.println("Noeuds explorés : " +leaves + ".");
         
-        if(moveHistory.size()>=2 && moveHistory.get(moveHistory.size()-2).equals(action)) {
+        /*if(moveHistory.size()>=2 && moveHistory.get(moveHistory.size()-2).equals(action)) {
         	//au cas où le coup a déjà été joué à l'avant-dernier coup
         	System.err.println("Coup en boucle.");
         	action = null;
-        }
+        }*/
 
         if (action == null) {
             System.err.println("Utilisation de la stratégie Aléatoire.");
@@ -113,6 +113,9 @@ public class StrategieMinmax implements Strategie {
         // Start by counting how many pieces each player has.
         int rouges = board.getnbPiecesRouge();
         int noires = board.getnbPiecesNoir();
+        int xRoi = board.getxRoi();
+        int yRoi = board.getyRoi();
+        int[][] actualBoard = board.getBoard();
         
         if(equipe == Equipe.ROUGE) { //si on joue les rouges
         	score += (rouges - noires);
@@ -142,10 +145,10 @@ public class StrategieMinmax implements Strategie {
         }
         
         // Find the shortest distance between the King and any corner of the board.
-    	int topLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
-    	int topRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(0 - board.getyRoi());
-    	int bottomLeftDist = Math.abs(0 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
-    	int bottomRightDist = Math.abs(12 - board.getxRoi()) + Math.abs(12 - board.getyRoi());
+    	int topLeftDist = Math.abs(0 - xRoi) + Math.abs(0 - yRoi);
+    	int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
+    	int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
+    	int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
 
         int shortestDist = Math.min(
                 Math.min(topLeftDist, topRightDist),
@@ -156,9 +159,45 @@ public class StrategieMinmax implements Strategie {
         // defending player, the shorter the distance, the higher the score.
        if (equipe == Equipe.ROUGE){
             score += 0.5f*shortestDist;
+            if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
+            	if(xRoi < 12) {
+		            if(actualBoard[xRoi+1][yRoi] == 4 && xRoi < 12) {
+		            	score += 1f;
+		            }
+	            }
+            	if(yRoi < 12) {
+		            if(actualBoard[xRoi][yRoi+1] == 4) {
+		            	score += 1f;
+		            }
+            	}
+	            if(xRoi > 1) {
+		            if(actualBoard[xRoi-1][yRoi] == 4) {
+		            	score += 1f;
+		            }
+		            }
+	            if(yRoi > 1) {
+		            if(actualBoard[xRoi][yRoi-1] == 4) {
+		            	score += 1f;
+		            }
+	            }
+            }
         }
         else{
             score -= 0.5f*shortestDist;
+            /*if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
+	            if(actualBoard[xRoi+1][yRoi] == 4) {
+	            	score -= 1f;
+	            }
+	            if(actualBoard[xRoi][yRoi+1] == 4) {
+	            	score -= 1f;
+	            }
+	            if(actualBoard[xRoi-1][yRoi] == 4) {
+	            	score -= 1f;
+	            }
+	            if(actualBoard[xRoi][yRoi-1] == 4) {
+	            	score -= 1f;
+	            }
+            }*/
         }
         
         return score;
@@ -184,7 +223,7 @@ public class StrategieMinmax implements Strategie {
         for(Move action : possibilities) {
             // Simulate a step, and then recurse.
 	        	if(elapsedTime < WAIT_TIME_MILLI) {
-	            Board newBoard = new Board(board, action);
+	            Board newBoard = new Board(board, action, Client.equipe);
 	            Result result = min(newBoard, depth - 1, alpha, beta);
 	
 	            if(max == null || result.score > max.score)
@@ -196,6 +235,7 @@ public class StrategieMinmax implements Strategie {
 	            }
         	}
         	else {
+        		System.out.println("Stop !");
         		break;
         	}
         }
@@ -204,7 +244,7 @@ public class StrategieMinmax implements Strategie {
     }
 
     public Result min(Board board, int depth, float alpha, float beta) {
-    	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
+    	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe.opposite());
     	elapsedTime = (new Date()).getTime() - startTime;
     	if(possibilities.isEmpty()) {
     		board.setOver(true);
@@ -215,10 +255,10 @@ public class StrategieMinmax implements Strategie {
         }
 
         Result min = null;
-        for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
+        for(Move action : possibilities) {
             // Simulate a step, and then recurse.
         	if(elapsedTime < WAIT_TIME_MILLI) {
-        		Board newBoard = new Board(board, action);
+        		Board newBoard = new Board(board, action, Client.equipe.opposite());
                 Result result = max(newBoard, depth - 1, alpha, beta);
                 
                 if(min == null || result.score < min.score)
@@ -230,6 +270,7 @@ public class StrategieMinmax implements Strategie {
                 }
         	}
         	else {
+        		System.out.println("Stop !");
         		break;
         	}
         	
