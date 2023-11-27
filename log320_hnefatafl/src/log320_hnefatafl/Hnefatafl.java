@@ -1,6 +1,7 @@
 package log320_hnefatafl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Hnefatafl {
 
@@ -37,6 +38,7 @@ public class Hnefatafl {
 				}
 			}
 		}
+    	Collections.shuffle(possibilites);
         return possibilites;
     }
 }

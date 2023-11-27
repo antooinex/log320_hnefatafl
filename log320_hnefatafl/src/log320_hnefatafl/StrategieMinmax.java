@@ -54,10 +54,8 @@ public class StrategieMinmax implements Strategie {
         
         if(moveHistory.size()>=2 && moveHistory.get(moveHistory.size()-2).equals(action)) {
         	//au cas où le coup a déjà été joué à l'avant-dernier coup
+        	System.err.println("Coup en boucle.");
         	action = null;
-        }
-        else {
-        	moveHistory.add(action);
         }
 
         if (action == null) {
@@ -66,6 +64,7 @@ public class StrategieMinmax implements Strategie {
             moveHistory.add(action);
         }
 
+        moveHistory.add(action);
         return action.toString();
     }
 
@@ -184,20 +183,21 @@ public class StrategieMinmax implements Strategie {
         Result max = null;
         for(Move action : possibilities) {
             // Simulate a step, and then recurse.
-        	if(elapsedTime >= WAIT_TIME_MILLI) {
+	        	if(elapsedTime < WAIT_TIME_MILLI) {
+	            Board newBoard = new Board(board, action);
+	            Result result = min(newBoard, depth - 1, alpha, beta);
+	
+	            if(max == null || result.score > max.score)
+	                max = new Result(action, result.score);
+	
+	            if(ALPHA_BETA_PRUNING) {
+	                alpha = Math.max(alpha, result.score);
+	                if(beta <= alpha) break;
+	            }
+        	}
+        	else {
         		break;
         	}
-        	
-            Board newBoard = new Board(board, action);
-            Result result = min(newBoard, depth - 1, alpha, beta);
-
-            if(max == null || result.score > max.score)
-                max = new Result(action, result.score);
-
-            if(ALPHA_BETA_PRUNING) {
-                alpha = Math.max(alpha, result.score);
-                if(beta <= alpha) break;
-            }
         }
         //System.out.println(max.score);
         return max;
@@ -217,19 +217,22 @@ public class StrategieMinmax implements Strategie {
         Result min = null;
         for(Move action : ruleset.getActionsForBoard(board, Client.equipe)) {
             // Simulate a step, and then recurse.
-        	if(elapsedTime >= WAIT_TIME_MILLI) {
-        		break;
-        	}        	
-            Board newBoard = new Board(board, action);
-            Result result = max(newBoard, depth - 1, alpha, beta);
-            
-            if(min == null || result.score < min.score)
-                min = new Result(action, result.score);
+        	if(elapsedTime < WAIT_TIME_MILLI) {
+        		Board newBoard = new Board(board, action);
+                Result result = max(newBoard, depth - 1, alpha, beta);
+                
+                if(min == null || result.score < min.score)
+                    min = new Result(action, result.score);
 
-            if(ALPHA_BETA_PRUNING) {
-                beta = Math.min(beta, result.score);
-                if(beta <= alpha) break;
-            }
+                if(ALPHA_BETA_PRUNING) {
+                    beta = Math.min(beta, result.score);
+                    if(beta <= alpha) break;
+                }
+        	}
+        	else {
+        		break;
+        	}
+        	
         }
         return min;
     }
