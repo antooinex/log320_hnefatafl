@@ -38,7 +38,7 @@ public class Board {
 			}
 		}
 		
-		this.update(coupFromParent, equipe , true);
+		this.removePiece(coupFromParent, equipe);
 	}
 	
 	public void removePiece(Move coup, Equipe equipe) {
