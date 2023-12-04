@@ -6,7 +6,7 @@ import java.util.Collections;
 public class Hnefatafl {
 
     public int getAISearchDepth() {
-        return 3;
+        return 2;
     }
 
     public ArrayList<Move> getActionsForBoard(Board board, Equipe equipe) {

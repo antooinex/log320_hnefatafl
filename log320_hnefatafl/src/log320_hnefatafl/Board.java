@@ -97,11 +97,9 @@ public class Board {
 				}
 				else if (equipe == Equipe.NOIR) {
 					//le roi est dans un coin : victoire des noirs
-					if(this.board[xArr][yArr] == 5) {
-						if (estUnCoin(xArr, yArr)) {
-							this.gameOver = true;
-							this.winner = Winner.DEFENDER;
-						}
+					if(this.board[xArr][yArr] == 5 && estUnCoin(xArr, yArr)) {
+						this.gameOver = true;
+						this.winner = Winner.DEFENDER;
 					}
 					if(this.board[xVoisin][yVoisin] == 4) {
 						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
@@ -119,7 +117,6 @@ public class Board {
 			}	
 		}
 		if(compteurRoi == 4) {
-			System.out.println("ROI ENTOURÉ");
 			this.gameOver = true;
 			this.winner = Winner.ATTACKER;
 		}
