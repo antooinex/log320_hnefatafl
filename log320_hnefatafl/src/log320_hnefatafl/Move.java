@@ -29,9 +29,9 @@ public class Move {
 		coupArrivee[1] = parts[1].substring(1);
 		
 		this.setxDep(coord(coupDepart[0]));
-		this.setyDep(Integer.parseInt(coupDepart[1]));
+		this.setyDep(Integer.parseInt(coupDepart[1])-1);
 		this.setxArr(coord(coupArrivee[0]));
-		this.setyArr(Integer.parseInt(coupArrivee[1]));
+		this.setyArr(Integer.parseInt(coupArrivee[1])-1);
 	}
 
 	public int getxDep() {
@@ -68,42 +68,42 @@ public class Move {
 	
 	public String toString(){
 		StringBuilder sb = new StringBuilder();	
-		sb.append(alphabet[xDep-1]);
-		sb.append(Integer.toString(yDep));
+		sb.append(alphabet[xDep]);
+		sb.append(Integer.toString(yDep+1));
 		sb.append(" - ");
-		sb.append(alphabet[xArr-1]);
-		sb.append(Integer.toString(yArr));
+		sb.append(alphabet[xArr]);
+		sb.append(Integer.toString(yArr+1));
 		return sb.toString();
 	}
 	
 	public int coord(String lettre) {
 		switch(lettre) {
 		case "A":
-			return 1;
+			return 0;
 		case "B":
-			return 2;
+			return 1;
 		case "C":
-			return 3;
+			return 2;
 		case "D":
-			return 4;
+			return 3;
 		case "E":
-			return 5;
+			return 4;
 		case "F":
-			return 6;
+			return 5;
 		case "G":
-			return 7;
+			return 6;
 		case "H":
-			return 8;
+			return 7;
 		case "I":
-			return 9;
+			return 8;
 		case "J":
-			return 10;
+			return 9;
 		case "K":
-			return 11;
+			return 10;
 		case "L":
-			return 12;
+			return 11;
 		case "M":
-			return 13;
+			return 12;
 		default:
 			return -1;
 		}

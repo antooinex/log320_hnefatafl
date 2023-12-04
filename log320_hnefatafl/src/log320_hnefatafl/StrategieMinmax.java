@@ -49,14 +49,9 @@ public class StrategieMinmax implements Strategie {
         elapsedTime = 0L;
         
         System.out.println("Recherche en cours : minmax profondeur " + searchDepth + ".");
-        Move action = max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY).action;
-        System.out.println("Noeuds explorés : " +leaves + ".");
-        
-        /*if(moveHistory.size()>=2 && moveHistory.get(moveHistory.size()-2).equals(action)) {
-        	//au cas où le coup a déjà été joué à l'avant-dernier coup
-        	System.err.println("Coup en boucle.");
-        	action = null;
-        }*/
+        Result minmax =  max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+        Move action = minmax.action;
+        System.out.println("Noeuds explorés : " +leaves + ".\nScore du coup trouvé : "+minmax.score);
 
         if (action == null) {
             System.err.println("Utilisation de la stratégie Aléatoire.");
@@ -74,132 +69,116 @@ public class StrategieMinmax implements Strategie {
     /** Evaluate how good the board for the given player. */
     public static float eval(Board board, Equipe equipe) {
     	
-    	Board parent = board.getParent();
-    	int historySize = 0;
-    	if(parent != null) {
-    		historySize++;
-    	}
-    	while(parent != null) {
-    		parent = parent.getParent();
-    		historySize++;
-    	}
-    	
-    	Winner gagnantEquipe = Winner.UNDETERMINED;
-    	
-        if (equipe == Equipe.ROUGE) {
-        	gagnantEquipe = Winner.ATTACKER;
-        }
-        else{
-        	gagnantEquipe = Winner.DEFENDER;
-        }
-    	
-        // If the game already has a winner, then return -infinity or infinity
-        if(board.isOver()) {
-            if(board.getWinner() == Winner.DRAW) {
-            	return 0;
-            }
-            else{
-            	if(board.getWinner() == gagnantEquipe){
-            		return WIN_SCORE - historySize;
-            	}
-            	else {
-            		return LOSE_SCORE;
-            	}
-            }
-        }
-
-        float score = 0.0f;
-
-        // Start by counting how many pieces each player has.
-        int rouges = board.getnbPiecesRouge();
-        int noires = board.getnbPiecesNoir();
-        int xRoi = board.getxRoi();
-        int yRoi = board.getyRoi();
-        int[][] actualBoard = board.getBoard();
-        
-        if(equipe == Equipe.ROUGE) { //si on joue les rouges
-        	score += (rouges - noires);
-        	/*if(noires <= board.getParent().getnbPiecesNoir() ) { //si l'enfant a moins de noires que le parent
-        		score += 100f;
-        	}
-        	else{
-        		//score -= 100f;
-        	}
-   
-        	if(rouges < board.getParent().getnbPiecesRouge()) { //si l'enfant a moins de rouges que le parent
-        		score -= 100f;
-        	}*/
-        }
-        else { //si on joue les noirs
-        	score += (noires - rouges);
-        	/*if(rouges <= board.getParent().getnbPiecesRouge()) { //si l'enfant a moins de rouges que le parent
-        		score += 100f;
-        	}
-        	else {
-        		//score -= 500f;
-        	}
-        	
-        	if(noires < board.getParent().getnbPiecesNoir() ) { //si l'enfant a moins de noires que le parent
-        		score -= 100f;
-        	}*/
-        }
-        
-        // Find the shortest distance between the King and any corner of the board.
-    	int topLeftDist = Math.abs(0 - xRoi) + Math.abs(0 - yRoi);
-    	int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
-    	int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
-    	int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
-
-        int shortestDist = Math.min(
-                Math.min(topLeftDist, topRightDist),
-                Math.min(bottomLeftDist, bottomRightDist)
-        );
-
-        // For the attacking player, the larger the distance, the higher the score. For the
-        // defending player, the shorter the distance, the higher the score.
-       if (equipe == Equipe.ROUGE){
-            score += 0.5f*shortestDist;
-            if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
-            	if(xRoi < 12) {
-		            if(actualBoard[xRoi+1][yRoi] == 4 && xRoi < 12) {
-		            	score += 1f;
-		            }
-	            }
-            	if(yRoi < 12) {
-		            if(actualBoard[xRoi][yRoi+1] == 4) {
-		            	score += 1f;
-		            }
-            	}
-	            if(xRoi > 1) {
-		            if(actualBoard[xRoi-1][yRoi] == 4) {
-		            	score += 1f;
-		            }
-		            }
-	            if(yRoi > 1) {
-		            if(actualBoard[xRoi][yRoi-1] == 4) {
-		            	score += 1f;
-		            }
-	            }
-            }
-        }
-        else{
-            score -= 0.5f*shortestDist;
-            /*if(xRoi > 1 && yRoi > 1 && xRoi < 12 && yRoi < 12) {
-	            if(actualBoard[xRoi+1][yRoi] == 4) {
-	            	score -= 1f;
-	            }
-	            if(actualBoard[xRoi][yRoi+1] == 4) {
-	            	score -= 1f;
-	            }
-	            if(actualBoard[xRoi-1][yRoi] == 4) {
-	            	score -= 1f;
-	            }
-	            if(actualBoard[xRoi][yRoi-1] == 4) {
-	            	score -= 1f;
-	            }
-            }*/
-        }
-        
+    	float score = 0.0f;
+	
+		//calcul taille historique
+		Board parent = board.getParent();
+		int historySize = 0;
+		if(parent != null) {
+			historySize++;
+		}
+		while(parent != null) {
+			parent = parent.getParent();
+			historySize++;
+		}
+		
+		Winner gagnantEquipe = Winner.UNDETERMINED;
+	
+		if(equipe == Equipe.ROUGE){ //on évalue pour les rouges
+			
+			gagnantEquipe = Winner.ATTACKER;
+			
+			if(board.isOver()){ //si un gagnant est détecté
+				Winner gagnantBoard = board.getWinner();
+				if(gagnantBoard == Winner.DRAW){
+					return 0f;
+				}
+				else if(gagnantBoard == gagnantEquipe){
+					return WIN_SCORE - historySize;
+				}
+				else{
+					return LOSE_SCORE;
+				}
+			}
+			else{ //si pas de gagnant détecté
+			
+				// compter le nb de pièces pour chaque équipe
+				int rouges = board.getnbPiecesRouge();
+				int noires = board.getnbPiecesNoir();
+				
+				score = 0.0f;
+				
+				//moins il y a de noires mieux c'est (coef x5 sur norme 100)
+				score += ((13f - noires)*100f/13f)*5f;
+				
+				//chaque rouge en moins vaut 1 point de moins (coef x1 sur norme 100)
+				score -= (24f - rouges)*100f/24f;
+				
+				//favoriser encercler le roi
+				int compteurRoi = board.getCompteurRoi();
+				score += 25f*compteurRoi;
+			}
+		}
+		else{ //on évalue pour les noirs
+			
+			gagnantEquipe = Winner.DEFENDER;
+			
+			if(board.isOver()){ //si un gagnant est détecté
+				Winner gagnantBoard = board.getWinner();
+				if(gagnantBoard == Winner.DRAW){
+					return 0f;
+				}
+				else if(gagnantBoard == gagnantEquipe){
+					return WIN_SCORE - historySize;
+				}
+				else{
+					return LOSE_SCORE;
+				}
+			}
+			else{ //si pas de gagnant détecté
+			
+				// compter le nb de pièces pour chaque équipe
+				int rouges = board.getnbPiecesRouge();
+				int noires = board.getnbPiecesNoir();
+				int xRoi = board.getxRoi();
+				int yRoi = board.getyRoi();
+				int[][] actualBoard = board.getBoard();
+				
+				score = 0.0f;
+				
+				//plus il y a de noires mieux c'est (coef x2 sur norme 100)
+				score += (noires*100f/13f)*2f;
+				
+				//chaque rouge en moins vaut 1 point de plus (coef x1 sur norme 100)
+				score += (24f - rouges)*100f/24f;
+				
+				//trouver coordonnées du roi
+				for(int i = 0; i < 13; i++){
+					for(int j = 0; j < 13; j++){
+						if(actualBoard[i][j] == 5){
+							xRoi = i;
+							yRoi = j;
+							break;
+						}
+					}
+				}
+				
+				//calculer les distances manhattan entre le roi et les coins
+				int topLeftDist = Math.abs(0 - xRoi) + Math.abs(0 - yRoi);
+				int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
+				int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
+				int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
+				
+				//prendre la distance la plus courte
+				int shortestDist = Math.min(
+					Math.min(topLeftDist, topRightDist),
+					Math.min(bottomLeftDist, bottomRightDist)
+				);
+				
+				//plus le roi est proche d'un coin mieux c'est (coef 10x sur norme 100)
+				score += (12f-shortestDist)*100f/12f*10f; //la distance max est 12
+			}
+		}
         return score;
     }
 
@@ -225,15 +204,17 @@ public class StrategieMinmax implements Strategie {
 	        	if(elapsedTime < WAIT_TIME_MILLI) {
 	            Board newBoard = new Board(board, action, Client.equipe);
 	            Result result = min(newBoard, depth - 1, alpha, beta);
-	
-	            if(max == null || result.score > max.score)
-	                max = new Result(action, result.score);
-	
-	            if(ALPHA_BETA_PRUNING) {
-	                alpha = Math.max(alpha, result.score);
-	                if(beta <= alpha) break;
+	            
+	            if(result != null) {
+		            if(max == null || result.score > max.score)
+		                max = new Result(action, result.score);
+		
+		            if(ALPHA_BETA_PRUNING) {
+		                alpha = Math.max(alpha, result.score);
+		                if(beta <= alpha) break;
+		            }
 	            }
-        	}
+	        }
         	else {
         		System.out.println("Stop !");
         		break;
@@ -251,7 +232,7 @@ public class StrategieMinmax implements Strategie {
     	}
         if(board.isOver() || depth == 0) {
             ++leaves; // We've reached a leaf.
-            return new Result(null, eval(board, Client.equipe));
+            return new Result(null, eval(board, Client.equipe.opposite()));
         }
 
         Result min = null;
@@ -261,13 +242,15 @@ public class StrategieMinmax implements Strategie {
         		Board newBoard = new Board(board, action, Client.equipe.opposite());
                 Result result = max(newBoard, depth - 1, alpha, beta);
                 
-                if(min == null || result.score < min.score)
-                    min = new Result(action, result.score);
-
-                if(ALPHA_BETA_PRUNING) {
-                    beta = Math.min(beta, result.score);
-                    if(beta <= alpha) break;
-                }
+                if(result != null) {
+	                if(min == null || result.score < min.score)
+	                    min = new Result(action, result.score);
+	
+	                if(ALPHA_BETA_PRUNING) {
+	                    beta = Math.min(beta, result.score);
+	                    if(beta <= alpha) break;
+	                }
+	        	}
         	}
         	else {
         		System.out.println("Stop !");

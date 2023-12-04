@@ -10,6 +10,7 @@ public class Board {
 	private int nbPiecesRouge = 24;
 	private int xRoi = 6;
 	private int yRoi = 6;
+	private int compteurRoi = 0;
 	
 	Board(){
 		
@@ -42,75 +43,91 @@ public class Board {
 	}
 	
 	public void removePiece(Move coup, Equipe equipe) {
-		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
 		Move dernierCoup = coup;
+		int xDep = dernierCoup.getxDep();
+		int yDep = dernierCoup.getyDep();
+		int xArr = dernierCoup.getxArr();
+		int yArr = dernierCoup.getyArr();
+	
+		int piece = this.getBoard()[xDep][yDep];
+		setValue(xArr, yArr, piece);
+		setValue(xDep, yDep, 0);
+		if(getBoard()[xArr][yArr] == 5){
+		    this.xRoi=xArr;
+		    this.yRoi=yArr;
+		}
+		
+		//vérifie selon les règles si une pièce autre que le roi doit être retirée du jeu et la retire si c'est le cas
 		Direction[] directions = {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT};
-		int compteurRoi = 0;
+		this.compteurRoi = 0;
 		
 		for (Direction direction : directions) {
-			int[] voisin = getNeighbor(dernierCoup.getxArr(), dernierCoup.getyArr(), direction);
-			int xVoisin = voisin[0];
-			int yVoisin = voisin[1];
-			if (caseDansPlateau(xVoisin, yVoisin)){
-				if(equipe == Equipe.ROUGE) {
-					if(this.board[xVoisin-1][yVoisin-1] == 2) { //si le voisin est une pièce noire mais pas roi
-						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
-						int xVoisinDeVoisin = voisinDeVoisin[0];
-						int yVoisinDeVoisin = voisinDeVoisin[1];
-						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
-							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
-								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
-								setValue(xVoisin-1, yVoisin-1, 0);
-								nbPiecesNoir -= 1;
-							}
-						}
-					}
-				}
-				else if (equipe == Equipe.NOIR) {
-					int xArr = coup.getxArr();
-					int yArr = coup.getyArr();
-					//le roi est dans un coin : victoire des noirs
-					if(this.board[xArr-1][yArr-1] == 5) {
-						if ((xArr-1 == 0 && yArr-1 == 0) || (xArr-1 == 0 && yArr-1 == 12) || (xArr-1 == 12 && yArr-1 == 0) || (xArr-1 == 12 && yArr-1 == 12)) {
-							this.winner = Winner.DEFENDER;
-							this.gameOver = true;
-						}
-					}
-					if(this.board[xVoisin-1][yVoisin-1] == 4) {
-						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
-						int xVoisinDeVoisin = voisinDeVoisin[0];
-						int yVoisinDeVoisin = voisinDeVoisin[1];
-						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
-							if(this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 2 || this.board[xVoisinDeVoisin-1][yVoisinDeVoisin-1] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
-								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
-								setValue(xVoisin-1, yVoisin-1, 0);
-								nbPiecesRouge -= 1;
-							}
-						}
-					}
-				}
-			}
+			
 			//vérification si le roi est entouré
 			//TODO : vérifier si ça marche + faire les tests avec les coins et les murs
 			int[] voisinRoi = getNeighbor(xRoi, yRoi, direction);
 			int xVoisinRoi = voisinRoi[0];
 			int yVoisinRoi = voisinRoi[1];
 			if (caseDansPlateau(xVoisinRoi, yVoisinRoi)){
-				if(this.board[xVoisinRoi-1][yVoisinRoi-1] == 4) {
-					compteurRoi++;
+				if(this.board[xVoisinRoi][yVoisinRoi] == 4 || estLeTrone(xVoisinRoi, yVoisinRoi) || estUnCoin(xVoisinRoi, yVoisinRoi)) {
+					this.compteurRoi++;
+				}
+			}
+			else {
+				this.compteurRoi++;
+			}
+			
+			int[] voisin = getNeighbor(dernierCoup.getxArr(), dernierCoup.getyArr(), direction);
+			int xVoisin = voisin[0];
+			int yVoisin = voisin[1];
+			if (caseDansPlateau(xVoisin, yVoisin)){
+				if(equipe == Equipe.ROUGE) {					
+					if(this.board[xVoisin][yVoisin] == 2) { //si le voisin est une pièce noire mais pas roi
+						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
+						int xVoisinDeVoisin = voisinDeVoisin[0];
+						int yVoisinDeVoisin = voisinDeVoisin[1];
+						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
+							if(this.board[xVoisinDeVoisin][yVoisinDeVoisin] == 4 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
+								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								setValue(xVoisin, yVoisin, 0);
+								nbPiecesNoir -= 1;
+							}
+						}
+					}
+				}
+				else if (equipe == Equipe.NOIR) {
+					//le roi est dans un coin : victoire des noirs
+					if(this.board[xArr][yArr] == 5) {
+						if (estUnCoin(xArr, yArr)) {
+							this.gameOver = true;
+							this.winner = Winner.DEFENDER;
+						}
+					}
+					if(this.board[xVoisin][yVoisin] == 4) {
+						int[] voisinDeVoisin = getNeighbor(xVoisin, yVoisin, direction);
+						int xVoisinDeVoisin = voisinDeVoisin[0];
+						int yVoisinDeVoisin = voisinDeVoisin[1];
+						if (caseDansPlateau(xVoisinDeVoisin, yVoisinDeVoisin)){
+							if(this.board[xVoisinDeVoisin][yVoisinDeVoisin] == 2 || this.board[xVoisinDeVoisin][yVoisinDeVoisin] == 5 || estUnCoin(xVoisinDeVoisin, yVoisinDeVoisin) || estLeTrone(xVoisinDeVoisin, yVoisinDeVoisin)) {
+								//System.out.println(this.board[xVoisin-1][yVoisin-1]+" ("+xVoisin+","+yVoisin+") retiré.");
+								setValue(xVoisin, yVoisin, 0);
+								nbPiecesRouge -= 1;
+							}
+						}
+					}
 				}
 			}	
 		}
 		if(compteurRoi == 4) {
 			System.out.println("ROI ENTOURÉ");
-			this.winner = Winner.ATTACKER;
 			this.gameOver = true;
-		}	
+			this.winner = Winner.ATTACKER;
+		}
 	}
 	
 	public boolean estLeTrone(int x, int y) {
 		boolean trone = false;
-		if(x == 7 && y == 7) {
+		if(x == 6 && y == 6) {
 			trone = true;
 		}
 		return trone;
@@ -118,14 +135,14 @@ public class Board {
 	
 	public boolean estUnCoin(int x, int y) {
 		boolean coin = false;
-		if((x == 13 && y == 13) || (x == 13 && y == 1) || (x == 1 && y == 13) || (x == 1 && y == 1)) {
+		if((x == 12 && y == 12) || (x == 12 && y == 0) || (x == 0 && y == 12) || (x == 0 && y == 0)) {
 			coin = true;
 		}
 		return coin;
 	}
 	public boolean caseDansPlateau(int x, int y) {
 		boolean dansPlateau = false;
-		if(x >= 1 && x <= 13 && y >= 1 && y <= 13) {
+		if(x >= 0 && x <= 12 && y >= 0 && y <= 12) {
 			dansPlateau = true;
 		}
 		return dansPlateau;
@@ -154,9 +171,9 @@ public class Board {
 		
 		boolean coordonneesValides = false;
 		boolean equipeValide = false;
-		if(xDep <= 13 && xDep >= 1 && yDep <= 13 && yDep >= 1 && xArr <= 13 && xArr >= 1 && yArr <= 13 && yArr >= 1) {
+		if(xDep <= 12 && xDep >= 0 && yDep <= 12 && yDep >= 0 && xArr <= 12 && xArr >= 0 && yArr <= 12 && yArr >= 0) {
 			coordonneesValides = true;
-			int piece = this.board[xDep-1][yDep-1];
+			int piece = this.board[xDep][yDep];
 			if(equipe == Equipe.ROUGE) { 
 				//on joue les rouges/blancs
 				if(piece == 4) {
@@ -179,7 +196,7 @@ public class Board {
 				equipeValide = false;
 			}
 			//teste si les coordonnées d'arrivée sont les coins ou le trône
-			if((xArr == 13 && yArr == 13) || (xArr == 13 && yArr == 1) || (xArr == 1 && yArr == 13) || (xArr == 1 && yArr == 1) || (xArr == 7 && yArr == 7)) {
+			if(estLeTrone(xArr, yArr) || estUnCoin(xArr, yArr)) {
 				if(piece != 5) {
 					//s'il ne s'agit pas du roi
 					coordonneesValides = false;
@@ -194,13 +211,13 @@ public class Board {
 		 * - Même abscisse ou même ordonnée au départ et à l'arrivée
 		 * - La coordonnée de départ n'est pas vide
 		 * - La coordonnée d'arrivée est vide
-		 * - Les coordonnées sont entre 1 et 13 (vérifié avant)
+		 * - Les coordonnées sont entre 0 et 12 (vérifié avant)
 		 * - Il n'y a pas de pièce entre le départ et l'arrivée
 		 * - Les coordonnées d'arrivée ne sont pas les coins ni le trône (sauf pour le roi) (vérifié avant)
 		 * - La pièce de départ est bien une pièce du joueur (vérifié avant)
 		 */
 		if(coordonneesValides && equipeValide) {
-			if((xDep == xArr || yDep == yArr) && this.getBoard()[xDep-1][yDep-1] != 0 && this.getBoard()[xArr-1][yArr-1] == 0) {
+			if((xDep == xArr || yDep == yArr) && this.getBoard()[xDep][yDep] != 0 && this.getBoard()[xArr][yArr] == 0) {
 				Direction dir = directionTo(xDep, yDep, xArr, yArr);
 				
 				int xTemp = xDep;
@@ -211,7 +228,7 @@ public class Board {
 					xTemp = neighbor[0];
 					yTemp = neighbor[1];
 				
-					if(this.getBoard()[xTemp-1][yTemp-1] != 0) {
+					if(this.getBoard()[xTemp][yTemp] != 0) {
 						coupValide = false;
 						if(update) {
 							System.out.println("Il y a une pièce sur le chemin demandé.");
@@ -241,13 +258,6 @@ public class Board {
 		}
 		
 		if(coupValide && update) {
-			int piece = getBoard()[xDep-1][yDep-1];
-			setValue(xArr-1, yArr-1, piece);
-			setValue(xDep-1, yDep-1, 0);
-			if(getBoard()[xArr-1][yArr-1] == 5){
-			    this.xRoi=xArr-1;
-			    this.yRoi=yArr-1;
-			}
 			this.removePiece(move, equipe);
 			//System.out.println("Plateau mis à jour.");
 		}
@@ -354,6 +364,10 @@ public class Board {
 	
 	public int getyRoi() {
 		return this.yRoi;
+	}
+	
+	public int getCompteurRoi() {
+		return this.compteurRoi;
 	}
 	
 }

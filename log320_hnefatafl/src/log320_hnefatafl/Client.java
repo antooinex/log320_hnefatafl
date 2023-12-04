@@ -1,6 +1,7 @@
 package log320_hnefatafl;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 
 class Client {
@@ -14,9 +15,13 @@ class Client {
 	BufferedOutputStream output;
     final Board board = new Board();
     final IA IA = new IA();
+    
+    Scanner sc = new Scanner(System.in);
 	
 	try {
-		MyClient = new Socket("localhost", 8888);
+		System.out.println("Adresse IP du serveur ?");
+		String address = sc.next();
+		MyClient = new Socket(address, 8888);
 
 	   	input    = new BufferedInputStream(MyClient.getInputStream());
 		output   = new BufferedOutputStream(MyClient.getOutputStream());
