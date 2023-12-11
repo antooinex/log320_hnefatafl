@@ -14,6 +14,6 @@ public enum Direction {
             case RIGHT:
                 return Direction.LEFT;
         }
-        throw new UnsupportedOperationException("Unkown Direction.");
+        throw new UnsupportedOperationException("Direction inconnue.");
     }
 }

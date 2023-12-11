@@ -5,10 +5,6 @@ import java.util.Collections;
 
 public class Hnefatafl {
 
-    public int getAISearchDepth() {
-        return 2;
-    }
-
     public ArrayList<Move> getActionsForBoard(Board board, Equipe equipe) {
     	ArrayList<Move> possibilites = new ArrayList<Move>();
         // Add all of the actions for pieces that the current player owns.

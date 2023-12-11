@@ -38,12 +38,9 @@ class Client {
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
-				//System.out.println("size :" + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
-                //System.out.println(s);
                 board.fullUpdate(s);
-                //board.draw();
                 System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
                 boolean moveSent = false;
     			boolean joueurIA = true;
@@ -54,29 +51,22 @@ class Client {
     					String move = null;
     					move = console.readLine();				
     					if(board.update(new Move(move), equipe, true)) {
-    						//System.out.println("xRoi "+board.getxRoi() + ", yRoi " + board.getyRoi());
     						System.out.println("Le coup choisi est valide.");
     						output.write(move.getBytes(),0,move.length());
     						output.flush();
-    						//board.removePiece(move, equipe);
-    						//board.draw();
     						moveSent = true;
     					}
     					else {
     						System.out.println("Le coup choisi est invalide.");
     					}
-    					//System.out.println("move " + move);
     				}
     			}
     			else {
     				String move = IA.jouer(board, equipe);
     				if(board.update(new Move(move), equipe, true)) {
-    					//System.out.println("xRoi "+board.getxRoi() + ", yRoi " + board.getyRoi());
     					System.out.println("Le coup choisi est valide.");
     					output.write(move.getBytes(),0,move.length());
     					output.flush();
-    					//board.removePiece(move, equipe);
-    					//board.draw();
     				}
     			}
             }
@@ -87,12 +77,9 @@ class Client {
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
-				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
-                //System.out.println(s);
                 board.fullUpdate(s);
-                //board.draw();
             }
 
 
@@ -102,16 +89,12 @@ class Client {
 			byte[] aBuffer = new byte[16];
 					
 			int size = input.available();
-			//System.out.println("size :" + size);
 			input.read(aBuffer,0,size);
 					
 			String s = new String(aBuffer);
 			System.out.println("Dernier coup :"+ s);
 			if(board.update(new Move(s), equipe.opposite(), true)) {
-				//System.out.println("xRoi "+board.getxRoi() + ", yRoi " + board.getyRoi());
 				System.out.println("Le dernier coup est valide.");
-				//board.removePiece(s, equipe.opposite());
-				//board.draw();
 			}
 			else {
 				System.out.println("Le dernier coup est invalide.");
@@ -125,29 +108,22 @@ class Client {
 					String move = null;
 					move = console.readLine();				
 					if(board.update(new Move(move), equipe, true)) {
-						//System.out.println("xRoi "+board.getxRoi() + ", yRoi " + board.getyRoi());
 						System.out.println("Le coup choisi est valide.");
 						output.write(move.getBytes(),0,move.length());
 						output.flush();
-						//board.removePiece(move, equipe);
-						//board.draw();
 						moveSent = true;
 					}
 					else {
 						System.out.println("Le coup choisi est invalide.");
 					}
-					//System.out.println("move " + move);
 				}
 			}
 			else {
 				String move = IA.jouer(board, equipe);
 				if(board.update(new Move(move), equipe, true)) {
-					//System.out.println("xRoi "+board.getxRoi() + ", yRoi " + board.getyRoi());
 					System.out.println("Le coup choisi est valide.");
 					output.write(move.getBytes(),0,move.length());
 					output.flush();
-					//board.removePiece(move, equipe);
-					//board.draw();
 				}
 			}
 	    }

@@ -2,9 +2,7 @@ package log320_hnefatafl;
 
 import java.util.ArrayList;
 import java.util.Date;
-/**
- * Implements a bot that uses the Minimax strategy to chooses moves.
- */
+
 public class StrategieMinmax implements Strategie {
 	
     private ArrayList<Move> moveHistory = new ArrayList<Move>();
@@ -13,8 +11,7 @@ public class StrategieMinmax implements Strategie {
     private long elapsedTime;
     private int WAIT_TIME_MILLI = 4800;
     
-    /** Helper class that represents a (action, score) tuple */
-    public static final class Result {
+    public class Result {
         public final Move action;
         public final float score;
         public Result(Move action, float score) {
@@ -23,30 +20,26 @@ public class StrategieMinmax implements Strategie {
         }
     }
 
-    private final Hnefatafl ruleset = new Hnefatafl();
-    
-    /** The default value for searchDepth */
-    public static final int DEFAULT_SEARCH_DEPTH = 2;
+    private Hnefatafl ruleset = new Hnefatafl();
 
-    /** The number of Plys to search forward */
-    private final int searchDepth = ruleset.getAISearchDepth();
+    private int searchDepth;
 
-    /**
-     * Variable used for counting how many leaf nodes of the game tree we visit. It is set to zero
-     * before each search, and read after the search.
-     * */
     private int leaves = 0;
 
-    
-    
     @Override
     public String coupAJouer(Board currentBoard, Equipe equipe) {
 
-        // Clear leaves count.
         leaves = 0;
 
         startTime = System.currentTimeMillis();
         elapsedTime = 0L;
+        
+        if(Client.equipe == Equipe.NOIR) {
+        	this.searchDepth = 2;
+        }
+        else {
+        	this.searchDepth = 3;
+        }
         
         System.out.println("Recherche en cours : minmax profondeur " + searchDepth + ".");
         Result minmax =  max(currentBoard, searchDepth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
@@ -66,7 +59,6 @@ public class StrategieMinmax implements Strategie {
     public static float WIN_SCORE = 1000.0f;
     public static float LOSE_SCORE = -1000.0f;
 
-    /** Evaluate how good the board for the given player. */
     public static float eval(Board board, Equipe equipe) {
     	
     	float score = 0.0f;
@@ -99,78 +91,73 @@ public class StrategieMinmax implements Strategie {
 				else{
 					score += LOSE_SCORE;
 				}
-			}
-			//else{ //si pas de gagnant détecté
+			}			
+			// compter le nb de pièces pour chaque équipe
+			int rouges = board.getnbPiecesRouge();
+			int noires = board.getnbPiecesNoir();
 			
-				// compter le nb de pièces pour chaque équipe
-				int rouges = board.getnbPiecesRouge();
-				int noires = board.getnbPiecesNoir();
-				int xRoi = board.getxRoi();
-				int yRoi = board.getyRoi();
-				
-				score = 0.0f;
-				
-				//moins il y a de noires mieux c'est (coef x5 sur norme 100)
-				score += ((13f - noires)*100f/13f)*5f;
-				
-				//chaque rouge en moins vaut 1 point de moins (coef x5 sur norme 100)
-				score -= (24f - rouges)*100f/24f*5f;
-				
-				//favoriser encercler le roi
-				int compteurRoi = board.getCompteurRoi();
-				if(compteurRoi == 1) {
-					score += 50f;
-				}
-				else if(compteurRoi == 2) {
-					score += 200f;
-				}
-				else if(compteurRoi == 3) {
-					score += 800f;
-				}
-				else if(compteurRoi == 4) {
-					return WIN_SCORE;
-				}
-				
-				//bloquer les coins
-				int[][] actualBoard = board.getBoard();
-				
-				if(actualBoard[0][2] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[1][1] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[2][0] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[10][0] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[11][1] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[12][2] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[2][12] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[1][11] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[0][10] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[12][10] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[11][11] == 4) {
-					score+=15f;
-				}
-				if(actualBoard[10][12] == 4) {
-					score+=15f;
-				}
-			//}
+			score = 0.0f;
+			
+			//moins il y a de noires mieux c'est (coef x5 sur norme 100)
+			score += ((13f - noires)*100f/13f)*5f;
+			
+			//chaque rouge en moins vaut 1 point de moins (coef x5 sur norme 100)
+			score -= (24f - rouges)*100f/24f*5f;
+			
+			//favoriser encercler le roi
+			int compteurRoi = board.getCompteurRoi();
+			if(compteurRoi == 1) {
+				score += 50f;
+			}
+			else if(compteurRoi == 2) {
+				score += 200f;
+			}
+			else if(compteurRoi == 3) {
+				score += 800f;
+			}
+			else if(compteurRoi == 4) {
+				return WIN_SCORE;
+			}
+			
+			//bloquer les coins
+			int[][] actualBoard = board.getBoard();
+			
+			if(actualBoard[0][2] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[1][1] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[2][0] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[10][0] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[11][1] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[12][2] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[2][12] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[1][11] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[0][10] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[12][10] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[11][11] == 4) {
+				score+=15f;
+			}
+			if(actualBoard[10][12] == 4) {
+				score+=15f;
+			}
 		}
 		else{ //on évalue pour les noirs
 			
@@ -187,44 +174,40 @@ public class StrategieMinmax implements Strategie {
 				else{
 					score += LOSE_SCORE;
 				}
-			}
-			else{ //si pas de gagnant détecté
+			}			
+			// compter le nb de pièces pour chaque équipe
+			int rouges = board.getnbPiecesRouge();
+			int noires = board.getnbPiecesNoir();
+			int xRoi = board.getxRoi();
+			int yRoi = board.getyRoi();
 			
-				// compter le nb de pièces pour chaque équipe
-				int rouges = board.getnbPiecesRouge();
-				int noires = board.getnbPiecesNoir();
-				int xRoi = board.getxRoi();
-				int yRoi = board.getyRoi();
-				
-				score = 0.0f;
-				
-				//plus il y a de noires mieux c'est (coef x2 sur norme 100)
-				score += (noires*100f/13f)*2f;
-				
-				//chaque rouge en moins vaut 1 point de plus (coef x1 sur norme 100)
-				score += (24f - rouges)*100f/24f;
-				
-				//calculer les distances manhattan entre le roi et les coins
-				int topLeftDist = Math.abs(0 - xRoi) + Math.abs(0 - yRoi);
-				int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
-				int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
-				int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
-				
-				//prendre la distance la plus courte
-				int shortestDist = Math.min(
-					Math.min(topLeftDist, topRightDist),
-					Math.min(bottomLeftDist, bottomRightDist)
-				);
-				
-				//plus le roi est proche d'un coin mieux c'est (coef 10x sur norme 100)
-				score += (12f-shortestDist)*100f/12f*10f; //la distance max est 12
-			}
+			score = 0.0f;
+			
+			//plus il y a de noires mieux c'est (coef x2 sur norme 100)
+			score += (noires*100f/13f)*2f;
+			
+			//chaque rouge en moins vaut 1 point de plus (coef x1 sur norme 100)
+			score += (24f - rouges)*100f/24f;
+			
+			//calculer les distances manhattan entre le roi et les coins
+			int topLeftDist = Math.abs(0 - xRoi) + Math.abs(0 - yRoi);
+			int topRightDist = Math.abs(12 - xRoi) + Math.abs(0 - yRoi);
+			int bottomLeftDist = Math.abs(0 - xRoi) + Math.abs(12 - yRoi);
+			int bottomRightDist = Math.abs(12 - xRoi) + Math.abs(12 - yRoi);
+			
+			//prendre la distance la plus courte
+			int shortestDist = Math.min(
+				Math.min(topLeftDist, topRightDist),
+				Math.min(bottomLeftDist, bottomRightDist)
+			);
+			
+			//plus le roi est proche d'un coin mieux c'est (coef 10x sur norme 100)
+			score += (12f-shortestDist)*100f/12f*10f; //la distance max est 12
 		}
         return score;
     }
-
-    /** Whether or not to use ALPHA_BETA_PRUNING to prune search paths */
-    public static final boolean ALPHA_BETA_PRUNING = true;
+    
+    private boolean ALPHA_BETA_PRUNING = true;
 
     public Result max(Board board, int depth, float alpha, float beta) {
     	ArrayList<Move> possibilities = ruleset.getActionsForBoard(board, Client.equipe);
@@ -233,14 +216,13 @@ public class StrategieMinmax implements Strategie {
     		board.setOver(true);
     		board.setWinner(Winner.DRAW);
     	}
-    	if(/*board.isOver() ||*/ depth == 0) {
-            ++leaves; // We've reached a leaf.
+    	if(depth == 0) {
+            ++leaves;
             return new Result(null, eval(board, Client.equipe));
         }
 
         Result max = null;
         for(Move action : possibilities) {
-            // Simulate a step, and then recurse.
         	elapsedTime = (new Date()).getTime() - startTime;
         	if(elapsedTime < WAIT_TIME_MILLI) {
 	            Board newBoard = new Board(board, action, Client.equipe);
@@ -261,7 +243,6 @@ public class StrategieMinmax implements Strategie {
         		break;
         	}
         }
-        //System.out.println(max.score);
         return max;
     }
 
@@ -272,14 +253,13 @@ public class StrategieMinmax implements Strategie {
     		board.setOver(true);
     		board.setWinner(Winner.DRAW);
     	}
-        if(/*board.isOver() ||*/ depth == 0) {
-            ++leaves; // We've reached a leaf.
+        if(depth == 0) {
+            ++leaves;
             return new Result(null, eval(board, Client.equipe));
         }
 
         Result min = null;
         for(Move action : possibilities) {
-            // Simulate a step, and then recurse.
         	if(elapsedTime < WAIT_TIME_MILLI) {
         		Board newBoard = new Board(board, action, Client.equipe.opposite());
                 Result result = max(newBoard, depth - 1, alpha, beta);

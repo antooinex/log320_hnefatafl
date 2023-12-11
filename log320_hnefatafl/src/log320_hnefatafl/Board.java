@@ -64,7 +64,6 @@ public class Board {
 		for (Direction direction : directions) {
 			
 			//vérification si le roi est entouré
-			//TODO : vérifier si ça marche + faire les tests avec les coins et les murs
 			int[] voisinRoi = getNeighbor(xRoi, yRoi, direction);
 			int xVoisinRoi = voisinRoi[0];
 			int yVoisinRoi = voisinRoi[1];
@@ -256,7 +255,6 @@ public class Board {
 		
 		if(coupValide && update) {
 			this.removePiece(move, equipe);
-			//System.out.println("Plateau mis à jour.");
 		}
 		
 		return coupValide;
@@ -264,7 +262,6 @@ public class Board {
 	
 	public void setValue(int x, int y, int value) {
 		board[x][y] = value;
-		//System.out.println(x + ";"+ y + " devient "+value);
 	}
 	
 	public int[] getNeighbor(int x, int y, Direction dir) {
